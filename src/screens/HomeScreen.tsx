@@ -447,21 +447,16 @@ export default function HomeScreen() {
           fullWidth
         />
         <Text style={[text.label(), s.collectionBadge]}>DROP / 010</Text>
-        <FlatList
-          data={products.slice(0, 4)}
-          keyExtractor={(item) => String(item.id)}
-          numColumns={2}
-          contentContainerStyle={s.collectionGrid}
-          renderItem={({ item, index }: { item: Product; index: number }) => (
-            <View style={s.collectionCardWrap} key={item.id}>
+        <View style={s.collectionGrid}>
+          {products.slice(0, 4).map((item) => (
+            <View key={item.id} style={s.collectionCard}>
               <ProductCard
                 item={item}
-                index={index}
                 onPress={(id: number) => navigation.navigate('ProductDetail', { id })}
               />
             </View>
-          )}
-        />
+          ))}
+        </View>
       </View>
 
       {/* ---------- PREVIOUS CHAPTER ---------- */}
@@ -717,8 +712,13 @@ const s = StyleSheet.create({
   collectionSection: { paddingHorizontal: 16, marginBottom: 28 },
   collectionDesc: { fontSize: 13, marginBottom: 14 },
   collectionBadge: { ...text.label(), color: theme.colors.accent, marginBottom: 16 },
-  collectionGrid: { padding: 16 },
-  collectionCardWrap: { width: '50%', paddingRight: 12, paddingBottom: 16 },
+  collectionGrid: {
+    padding: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  collectionCard: { width: '48%', paddingBottom: 16 },
 
   previousSection: { paddingHorizontal: 16, marginBottom: 28 },
   previousDivider: { height: 1, backgroundColor: theme.colors.border, marginBottom: 12 },
