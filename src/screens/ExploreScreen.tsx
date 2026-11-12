@@ -1,5 +1,14 @@
 import { useCallback, useMemo, useState } from "react";
-import { View, Text, TextInput, FlatList, Pressable, ActivityIndicator, RefreshControl, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useProducts } from "../hooks/useProducts";
@@ -47,7 +56,12 @@ export default function ExploreScreen() {
     [onPressItem]
   );
 
-  if (loading) return <View style={sheet.center()}><ActivityIndicator size="large" color={theme.colors.text} /></View>;
+  if (loading)
+    return (
+      <View style={sheet.center()}>
+        <ActivityIndicator size="large" color={theme.colors.text} />
+      </View>
+    );
   if (error)
     return (
       <View style={sheet.center()}>
@@ -102,6 +116,9 @@ const s = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
     color: theme.colors.text,
     fontFamily: theme.fonts.mono,
     fontSize: 14,

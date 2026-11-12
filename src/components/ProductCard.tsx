@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, Image, Text, StyleSheet } from "react-native";
 import { Product } from "../types";
-import { theme, surface, border, text } from "../utils/theme";
+import { theme, surface, text } from "../utils/theme";
 
 type Props = { item: Product; onPress: (id: number) => void; index?: number };
 
@@ -13,8 +13,8 @@ function ProductCard({ item, onPress, index }: Props) {
       )}
       <Image source={{ uri: item.image }} style={s.img} resizeMode="cover" />
       <Text style={s.price}>${item.price}</Text>
-      <Text style={s.title}>{item.title}</Text>
-      <Text style={s.view}>VIEW ↗</Text>
+      <Text style={s.title}>{item.title.toUpperCase()}</Text>
+      <Text style={s.view}>VIEW PIECE ↗</Text>
     </Pressable>
   );
 }
@@ -38,6 +38,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     fontSize: 10,
+    zIndex: 1,
   },
   img: { height: 170, width: '100%', backgroundColor: theme.colors.surface, marginBottom: 10 },
   price: {
@@ -53,5 +54,6 @@ const s = StyleSheet.create({
   view: {
     ...text.label(),
     fontSize: 10,
+    color: theme.colors.accent,
   },
 });

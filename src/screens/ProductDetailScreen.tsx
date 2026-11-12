@@ -23,8 +23,18 @@ export default function ProductDetailScreen() {
       .catch(() => setError(true));
   }, [params.id]);
 
-  if (error) return <View style={sheet.center()}><Text style={[text.label(), { color: theme.colors.accent }]}>Failed to load item.</Text></View>;
-  if (!product) return <View style={sheet.center()}><ActivityIndicator size="large" color={theme.colors.text} /></View>;
+  if (error)
+    return (
+      <View style={sheet.center()}>
+        <Text style={[text.label(), { color: theme.colors.accent }]}>Failed to load item.</Text>
+      </View>
+    );
+  if (!product)
+    return (
+      <View style={sheet.center()}>
+        <ActivityIndicator size="large" color={theme.colors.text} />
+      </View>
+    );
 
   const saved = isSaved(product.id);
 
@@ -33,7 +43,10 @@ export default function ProductDetailScreen() {
       <Image source={{ uri: product.image }} style={s.img} resizeMode="cover" />
       <View style={s.pad}>
         <Text style={[text.heading(), s.title]}>{product.title.toUpperCase()}</Text>
-        <Text style={[text.label(), s.price]}>${product.price}</Text>
+        <Text style={[text.label(), s.price]}>
+          ${product.price}
+          <Text style={s.priceSuffix}> VIEW PIECE</Text>
+        </Text>
         <Button
           title={saved ? 'REMOVE ↗' : 'SAVE TO LOCKER ↗'}
           onPress={() => (saved ? remove(product.id) : add(product))}
@@ -49,6 +62,7 @@ const s = StyleSheet.create({
   content: { paddingBottom: 90 },
   img: { height: 420, width: '100%', backgroundColor: theme.colors.surface },
   pad: { padding: 20 },
-  title: { fontSize: 40, letterSpacing: -1, marginBottom: 8 },
+  title: { fontSize: 48, letterSpacing: -2, marginBottom: 8 },
   price: { fontSize: 16, marginBottom: 22 },
+  priceSuffix: { fontSize: 10, color: theme.colors.accent },
 });
