@@ -13,8 +13,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ProductCard';
 import { filterProductsByOutfit } from '../utils/outfit';
-import { theme, text, sheet } from '../utils/theme';
+import { surface, theme, text, sheet } from '../utils/theme';
 import { SectionHeader } from '../components/SectionHeader';
+import { useCountdown } from '../hooks/useCountdown';
 import { OutfitCategory, Product } from '../types';
 
 type HomeNavigationParamList = {
@@ -92,6 +93,7 @@ export default function HomeScreen() {
 
   const category: OutfitCategory = weather ? outfitForTemperature(weather.temperature) : 'casual';
   const suggested = filterProductsByOutfit(products, category);
+  const drop = useCountdown();
 
   return (
     <ScrollView
@@ -115,6 +117,16 @@ export default function HomeScreen() {
             <Text style={[text.heading(), s.period]}>.</Text>
           </>
         )}
+      </View>
+
+      <View style={s.dropStrip}>
+        <View style={s.dropLabelRow}>
+          <View style={s.dot} />
+          <Text style={[text.label()]}>NEXT TRANSMISSION</Text>
+        </View>
+        <Text style={[text.heading(), s.dropTime]}>
+          {String(drop.days).padStart(2, '0')}d {String(drop.hours).padStart(2, '0')}:{String(drop.minutes).padStart(2, '0')}:{String(drop.seconds).padStart(2, '0')}
+        </Text>
       </View>
 
       <SectionHeader label="02 / SUGGESTED" heading="SUGGESTED FOR TODAY" />
@@ -152,6 +164,17 @@ export default function HomeScreen() {
 const s = StyleSheet.create({
   content: { padding: 16, paddingBottom: 90 },
   label: { color: theme.colors.subtext },
+  dropStrip: {
+    ...surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+    marginBottom: 24,
+  },
+  dropLabelRow: { flexDirection: 'row', alignItems: 'center' },
+  dot: { width: 6, height: 6, backgroundColor: theme.colors.accent, marginRight: 8 },
+  dropTime: { fontSize: 20, letterSpacing: -1 },
   weatherCard: {
     backgroundColor: theme.colors.surface,
     borderWidth: theme.borderWidth,
