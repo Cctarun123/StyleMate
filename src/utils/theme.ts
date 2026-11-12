@@ -1,88 +1,110 @@
-import { ViewStyle, TextStyle } from 'react-native';
+import { TextStyle, ViewStyle } from 'react-native';
 
 export const FONT_CONFIG = {
-  display: 'BarlowCondensed_700Bold',
-  displayMedium: 'BarlowCondensed_600SemiBold',
+  title: 'LibreBaskerville_700Bold',
+  heading: 'LibreBaskerville_700Bold',
   body: 'Inter_400Regular',
-  bodyMedium: 'Inter_500Medium',
-  label: 'Inter_600SemiBold',
+  label: 'Inter_500Medium',
+  price: 'Inter_600SemiBold',
 } as const;
 
-export const theme = {
-  colors: {
-    bg: '#0A0A0A',
-    surface: '#141414',
-    text: '#F5F5F5',
-    subtext: '#888888',
-    border: '#292929',
-    accent: '#FF3838',
-  },
-  fonts: {
-    display: FONT_CONFIG.display,
-    displayMedium: FONT_CONFIG.displayMedium,
-    body: FONT_CONFIG.body,
-    bodyMedium: FONT_CONFIG.bodyMedium,
-    label: FONT_CONFIG.label,
-  },
-  spacing: {
-    xs: 4,
-    s: 8,
-    m: 16,
-    l: 24,
-    xl: 32,
-  },
+export const spacing = {
+  xs: 4,
+  s: 8,
+  m: 16,
+  l: 24,
+  xl: 32,
+};
+
+export const radius = {
+  sm: 8,
+  md: 16,
+  lg: 24,
+  pill: 999,
+};
+
+export const colors = {
+  bg: '#FFFFFF',
+  tile: '#E3E3E3',
+  card: '#F5F5F5',
+  text: '#111111',
+  subtext: '#6B6B6B',
+  border: '#DADADA',
+  dark: '#1A1A1A',
+  onDark: '#FFFFFF',
+  price: '#1F6FA5',
+  danger: '#C0392B',
+} as const;
+
+export type ThemeColors = typeof colors;
+
+export function useTheme() {
+  return {
+    colors,
+    fonts: FONT_CONFIG,
+    spacing,
+    radius,
+  };
+}
+
+export type Theme = ReturnType<typeof useTheme>;
+
+export const text = {
+  title: (colors: ThemeColors): TextStyle => ({
+    fontFamily: FONT_CONFIG.title,
+    fontWeight: '700',
+    fontSize: 22,
+    lineHeight: 30,
+    color: colors.text,
+  }),
+  heading: (colors: ThemeColors): TextStyle => ({
+    fontFamily: FONT_CONFIG.heading,
+    fontWeight: '700',
+    fontSize: 18,
+    lineHeight: 26,
+    color: colors.text,
+  }),
+  body: (colors: ThemeColors): TextStyle => ({
+    fontFamily: FONT_CONFIG.body,
+    fontWeight: '400',
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.text,
+  }),
+  label: (colors: ThemeColors): TextStyle => ({
+    fontFamily: FONT_CONFIG.label,
+    fontWeight: '500',
+    fontSize: 12,
+    lineHeight: 16,
+    color: colors.subtext,
+  }),
+  price: (colors: ThemeColors): TextStyle => ({
+    fontFamily: FONT_CONFIG.price,
+    fontWeight: '600',
+    fontSize: 15,
+    lineHeight: 20,
+    color: colors.price,
+  }),
+};
+
+export const border = (colors: ThemeColors): ViewStyle => ({
   borderWidth: 1,
-} as const;
+  borderColor: colors.border,
+});
 
-const display: TextStyle = {
-  fontFamily: theme.fonts.display,
-  fontWeight: '700',
-  textTransform: 'uppercase',
-  lineHeight: 1.15,
-  letterSpacing: 0.5,
-  color: theme.colors.text,
-};
-
-export const border: ViewStyle = {
-  borderWidth: theme.borderWidth,
-  borderColor: theme.colors.border,
-};
-
-export const surface: ViewStyle = {
-  backgroundColor: theme.colors.surface,
-  ...border,
-};
+export const surface = (colors: ThemeColors): ViewStyle => ({
+  backgroundColor: colors.card,
+  ...border(colors),
+});
 
 export const sheet = {
-  page: (): ViewStyle => ({
+  page: (colors: ThemeColors): ViewStyle => ({
     flex: 1,
-    backgroundColor: theme.colors.bg,
+    backgroundColor: colors.bg,
   }),
-  center: (): ViewStyle => ({
+  center: (colors: ThemeColors): ViewStyle => ({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   }),
 };
-
-export const text = {
-  display: (): TextStyle => display,
-  heading: (): TextStyle => display,
-  label: (): TextStyle => ({
-    fontFamily: theme.fonts.label,
-    fontWeight: '600',
-    fontSize: 11,
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    color: theme.colors.subtext,
-  }),
-  body: (): TextStyle => ({
-    fontFamily: theme.fonts.body,
-    fontWeight: '400',
-    fontSize: 15,
-    lineHeight: 22,
-    color: theme.colors.text,
-  }),
-};
-
-export type Theme = typeof theme;

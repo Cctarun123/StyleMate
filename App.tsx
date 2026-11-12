@@ -1,14 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import { BarlowCondensed_600SemiBold, BarlowCondensed_700Bold } from '@expo-google-fonts/barlow-condensed';
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
+import {
+  LibreBaskerville_400Regular,
+  LibreBaskerville_700Bold,
+} from '@expo-google-fonts/libre-baskerville';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+} from '@expo-google-fonts/inter';
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { WardrobeProvider } from './src/context/WardrobeContext';
-import { theme, text } from './src/utils/theme';
+import { colors } from './src/utils/theme';
 import HomeScreen from './src/screens/HomeScreen';
 import ExploreScreen from './src/screens/ExploreScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
@@ -17,38 +24,34 @@ import WardrobeScreen from './src/screens/WardrobeScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const navigationTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: theme.colors.accent,
-    background: theme.colors.bg,
-    card: theme.colors.surface,
-    text: theme.colors.text,
-    border: theme.colors.border,
-    notification: theme.colors.accent,
-  },
+const TAB_ICONS: Record<string, { outline: string; filled: string }> = {
+  Home: { outline: 'home-outline', filled: 'home' },
+  Explore: { outline: 'search-outline', filled: 'search' },
+  Wardrobe: { outline: 'heart-outline', filled: 'heart' },
 };
-
-function TabButton({ children, onPress, style }: BottomTabBarButtonProps) {
-  return (
-    <Pressable onPress={onPress} style={[s.tabItem, style]}>
-      <Text style={[text.label(), { fontSize: 10, letterSpacing: 1, color: theme.colors.subtext }]}>{children}</Text>
-    </Pressable>
-  );
-}
 
 function Tabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarButton: TabButton,
-        tabBarActiveTintColor: theme.colors.accent,
-        tabBarInactiveTintColor: theme.colors.subtext,
+        tabBarButton: ({ route, focused, color, onPress, style }: any) => {
+          const icon = TAB_ICONS[route.name];
+          return (
+            <Pressable onPress={onPress} style={[s.tabItem, style]}>
+              <Ionicons
+                name={(focused ? icon.filled : icon.outline) as any}
+                size={24}
+                color={focused ? colors.dark : colors.subtext}
+              />
+            </Pressable>
+          );
+        },
+        tabBarActiveTintColor: colors.dark,
+        tabBarInactiveTintColor: colors.subtext,
         tabBarStyle: {
-          backgroundColor: theme.colors.bg,
+          backgroundColor: colors.bg,
           borderTopWidth: 1,
-          borderTopColor: theme.colors.border,
+          borderTopColor: colors.border,
           elevation: 0,
           shadowOpacity: 0,
         },
@@ -64,8 +67,8 @@ function Tabs() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    BarlowCondensed_600SemiBold,
-    BarlowCondensed_700Bold,
+    LibreBaskerville_400Regular,
+    LibreBaskerville_700Bold,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -77,29 +80,14 @@ export default function App() {
 
   return (
     <WardrobeProvider>
-      <NavigationContainer theme={navigationTheme}>
-        <StatusBar style="light" />
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: { backgroundColor: theme.colors.surface },
-            headerShadowVisible: false,
-            headerTintColor: theme.colors.text,
-            headerTitleStyle: {
-              fontFamily: theme.fonts.label,
-              fontSize: 11,
-              fontWeight: '400',
-            },
-            headerBackTitleStyle: {
-              fontFamily: theme.fonts.label,
-              fontSize: 11,
-            },
-          }}
-        >
-          <Stack.Screen name="Tabs" component={Tabs} options={{ headerShown: false }} />
+      <NavigationContainer theme={DefaultTheme}>
+        <StatusBar style="dark" />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Tabs" component={Tabs} />
           <Stack.Screen
             name="ProductDetail"
             component={ProductDetailScreen}
-            options={{ title: 'PRODUCT DETAILS' }}
+            options={{ title: 'Product Details' }}
           />
         </Stack.Navigator>
       </NavigationContainer>
@@ -110,7 +98,7 @@ export default function App() {
 const s = StyleSheet.create({
   splash: {
     flex: 1,
-    backgroundColor: theme.colors.bg,
+    backgroundColor: colors.bg,
   },
   tabItem: {
     paddingVertical: 8,

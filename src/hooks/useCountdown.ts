@@ -37,9 +37,10 @@ export function getTimeLeft(now: Date, target: Date): Countdown {
 
 /** Live countdown that ticks every second and clears its interval on unmount. */
 export function useCountdown(): Countdown {
-  const targetRef = useRef(getNextDropTarget());
+  const target = getNextDropTarget();
+  const targetRef = useRef(target);
   const [countdown, setCountdown] = useState<Countdown>(() =>
-    getTimeLeft(new Date(), targetRef.current)
+    getTimeLeft(new Date(), target)
   );
 
   useEffect(() => {

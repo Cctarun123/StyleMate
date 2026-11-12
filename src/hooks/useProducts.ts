@@ -24,7 +24,9 @@ export function useProducts() {
   }, []);
 
   useEffect(() => {
-    load();
+    (async () => {
+      await load();
+    })();
   }, [load]);
 
   return { products, loading, refreshing, error, reload: () => load(false), refresh: () => load(true) };
