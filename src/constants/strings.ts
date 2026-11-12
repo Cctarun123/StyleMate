@@ -23,3 +23,6 @@ export const DETAILS_HEADING = 'Details';
 
 export const NOTHING_FOUND = 'Nothing found.';
 export const NOTHING_SAVED_YET = 'Nothing saved yet.';
+
+export const TEMP_PICKS_CHIP = 'Picks for';
+export const TEMP_PICKS_CLEAR = 'Clear';

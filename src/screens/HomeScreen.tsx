@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
-  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -14,15 +12,14 @@ import { CompositeNavigationProp, useNavigation } from '@react-navigation/native
 import Screen from '../components/Screen';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useProducts } from '../hooks/useProducts';
-import { filterProductsByOutfit } from '../utils/outfit';
-import { sheet, surface, text, useTheme, radius } from '../utils/theme';
+import { useWeather, outfitForTemperature } from '../hooks/useWeather';
+import { getPicks, getTempBand } from '../utils/outfit';
+import { sheet, text, useTheme, radius } from '../utils/theme';
 import { AppText } from '../components/AppText';
-import { Button } from '../components/Button';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryTabs } from '../components/CategoryTabs';
 import ProductTile from '../components/ProductTile';
-import { Product } from '../types';
+import { CLOTHES, BAND_LABELS } from '../data/clothes';
 import {
   APP_NAME,
   CATEGORY_ALL,
@@ -35,23 +32,13 @@ import {
   WEATHER_PICKS_SCREEN,
 } from '../constants/strings';
 
-const LATITUDE = 13.6288;
-const LONGITUDE = 79.4192;
-const WEATHER_URL = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&current=temperature_2m,weathercode`;
-
-type Weather = {
-  temperature: number;
-  condition: string;
-  code: number;
-};
-
 type HomeNavigationParamList = {
   ProductDetail: { id: number };
 };
 
 type HomeTabParamList = {
   Home: undefined;
-  Explore: undefined;
+  Explore: { temp?: number; rain?: boolean };
   Wardrobe: undefined;
 };
 
@@ -60,107 +47,50 @@ type HomeNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<HomeNavigationParamList>
 >;
 
-function weatherCondition(code: number): string {
-  if (code === 0) return 'Clear';
-  if (code <= 2) return 'Partly cloudy';
-  if (code === 3) return 'Overcast';
-  if (code === 45 || code === 48) return 'Foggy';
-  if (code >= 51 && code <= 57) return 'Drizzle';
-  if (code >= 61 && code <= 67) return 'Rain';
-  if (code >= 71 && code <= 77) return 'Snow';
-  if (code >= 80 && code <= 82) return 'Showers';
-  if (code === 85 || code === 86) return 'Snow showers';
-  if (code >= 95) return 'Thunderstorm';
-  return 'Clear';
-}
-
-function weatherEmoji(code: number): string {
-  if (code === 0) return '☀️';
-  if (code >= 1 && code <= 3) return '⛅';
-  if (code === 45 || code === 48) return '🌫';
-  if (code >= 51 && code <= 67) return '🌧';
-  if (code >= 71 && code <= 77) return '❄️';
-  if (code >= 80 && code <= 99) return '⛈';
-  return '☀️';
-}
-
-function outfitForTemperature(temperature: number): 'jackets' | 'light' | 'casual' {
-  if (temperature < 10) return 'jackets';
-  if (temperature > 22) return 'light';
-  return 'casual';
-}
-
 export default function HomeScreen() {
   const navigation = useNavigation<HomeNavigationProp>();
   const { colors } = useTheme();
 
-  const {
-    products,
-    loading: productsLoading,
-    refreshing: productsRefreshing,
-    error: productsError,
-    refresh: refreshProducts,
-  } = useProducts();
-  const [weather, setWeather] = useState<Weather | null>(null);
-  const [weatherLoading, setWeatherLoading] = useState(true);
-  const [weatherError, setWeatherError] = useState<string | null>(null);
+  const { weather, weatherLoading, weatherError, refresh: refreshWeather, isRainCode } =
+    useWeather();
   const [tab, setTab] = useState<string>(CATEGORY_ALL);
   const [query, setQuery] = useState('');
 
-  const fetchWeather = useCallback(async () => {
-    setWeatherLoading(true);
-    setWeatherError(null);
-    try {
-      const res = await fetch(WEATHER_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const current = data.current;
-      setWeather({
-        temperature: Math.round(current.temperature_2m),
-        condition: weatherCondition(current.weathercode),
-        code: current.weathercode,
-      });
-    } catch (error) {
-      setWeatherError(error instanceof Error ? error.message : 'Failed to load weather.');
-    } finally {
-      setWeatherLoading(false);
-    }
-  }, []);
+  const temperature = weather?.temperature ?? null;
+  const rain = weather != null ? isRainCode(weather.code) : false;
+  const band = temperature != null ? getTempBand(temperature) : null;
 
-  useEffect(() => {
-    (async () => {
-      await fetchWeather();
-    })();
-  }, [fetchWeather]);
-
-  const onRefresh = useCallback(async () => {
-    await Promise.all([fetchWeather(), refreshProducts()]);
-  }, [fetchWeather, refreshProducts]);
-
-  const category = weather ? outfitForTemperature(weather.temperature) : 'casual';
-
-  const genderValue = useMemo(() => {
-    if (tab === CATEGORY_MEN) return "men's clothing";
-    if (tab === CATEGORY_WOMEN) return "women's clothing";
-    return '';
+  const genderFilter = useMemo(() => {
+    if (tab === CATEGORY_MEN) return 'men';
+    if (tab === CATEGORY_WOMEN) return 'women';
+    return undefined;
   }, [tab]);
 
+  const picks = useMemo(() => {
+    if (temperature === null) return [];
+    return getPicks(CLOTHES, temperature, { rain, gender: genderFilter });
+  }, [temperature, rain, genderFilter]);
+
   const topPicks = useMemo(() => {
-    let data = filterProductsByOutfit(products, category);
-    if (genderValue) {
-      data = data.filter((p) => p.category === genderValue);
-    }
-    if (query) {
-      const q = query.toLowerCase();
-      data = data.filter((p) => p.title.toLowerCase().includes(q));
-    }
-    return data;
-  }, [products, category, genderValue, query]);
+    if (!query) return picks;
+    const q = query.toLowerCase();
+    return picks.filter((p) => p.title.toLowerCase().includes(q));
+  }, [picks, query]);
 
   const onPressItem = useCallback(
     (id: number) => navigation.navigate('ProductDetail', { id }),
     [navigation]
   );
+
+  const onRefresh = useCallback(async () => {
+    await refreshWeather();
+  }, [refreshWeather]);
+
+  const onSeePicks = useCallback(() => {
+    if (temperature != null) {
+      navigation.navigate(WEATHER_PICKS_SCREEN, { temp: temperature, rain });
+    }
+  }, [navigation, temperature, rain]);
 
   const styles = StyleSheet.create({
     content: { paddingBottom: 32 },
@@ -178,6 +108,14 @@ export default function HomeScreen() {
     },
     iconButton: {
       padding: 6,
+    },
+    bandRow: {
+      paddingHorizontal: 16,
+      marginBottom: 4,
+    },
+    bandLabel: {
+      ...text.label(colors),
+      color: colors.subtext,
     },
     weatherCard: {
       backgroundColor: colors.dark,
@@ -249,14 +187,17 @@ export default function HomeScreen() {
       style={sheet.page(colors)}
       contentContainerStyle={styles.content}
       refreshControl={
-        <RefreshControl refreshing={weatherLoading || productsRefreshing} onRefresh={onRefresh} />
+        <RefreshControl refreshing={weatherLoading} onRefresh={onRefresh} />
       }
     >
       {/* Header row */}
       <View style={styles.headerRow}>
-        <Pressable style={styles.iconButton} onPress={() => {
-          // Menu placeholder.
-        }}>
+        <Pressable
+          style={styles.iconButton}
+          onPress={() => {
+            // Menu placeholder.
+          }}
+        >
           <Ionicons name="menu-outline" size={26} color={colors.text} />
         </Pressable>
         <AppText variant="title" style={styles.appName}>
@@ -266,6 +207,15 @@ export default function HomeScreen() {
           <Ionicons name="bag-outline" size={26} color={colors.text} />
         </Pressable>
       </View>
+
+      {/* Band label */}
+      {band != null && temperature != null && (
+        <View style={styles.bandRow}>
+          <AppText variant="label" style={styles.bandLabel}>
+            {BAND_LABELS[band]}, {temperature}°
+          </AppText>
+        </View>
+      )}
 
       {/* Category tabs */}
       <View style={{ paddingHorizontal: 16 }}>
@@ -291,11 +241,11 @@ export default function HomeScreen() {
             </AppText>
           ) : (
             <AppText variant="label" style={styles.weatherWear}>
-              {WEATHER_WEAR_PREFIX} {category}
+              {WEATHER_WEAR_PREFIX} {outfitForTemperature(temperature ?? 20)}
             </AppText>
           )}
         </View>
-        <Pressable style={styles.seePicksButton} onPress={() => navigation.navigate(WEATHER_PICKS_SCREEN)}>
+        <Pressable style={styles.seePicksButton} onPress={onSeePicks}>
           <AppText variant="label" style={styles.seePicksText}>
             {WEATHER_SEE_PICKS}
           </AppText>
@@ -312,13 +262,13 @@ export default function HomeScreen() {
         <AppText variant="heading">{TOP_PICKS_HEADING}</AppText>
       </View>
 
-      {productsError && (
+      {weatherError && (
         <AppText variant="label" style={styles.error}>
-          Products: {productsError}
+          Weather: {weatherError}
         </AppText>
       )}
 
-      {productsLoading ? (
+      {weatherLoading ? (
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={colors.text} />
         </View>
@@ -338,4 +288,14 @@ export default function HomeScreen() {
     </ScrollView>
     </Screen>
   );
+}
+
+function weatherEmoji(code: number): string {
+  if (code === 0) return '☀️';
+  if (code >= 1 && code <= 3) return '⛅';
+  if (code === 45 || code === 48) return '🌫';
+  if (code >= 51 && code <= 67) return '🌧';
+  if (code >= 71 && code <= 77) return '❄️';
+  if (code >= 80 && code <= 99) return '⛈';
+  return '☀️';
 }

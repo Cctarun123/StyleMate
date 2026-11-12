@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import { View, Image, ScrollView, ActivityIndicator, StyleSheet, Pressable } from 'react-native';
+import { useState } from 'react';
+import { View, Image, ScrollView, StyleSheet, Pressable } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useWardrobe } from '../context/WardrobeContext';
-import { Product } from '../types';
 import { sheet, text, useTheme } from '../utils/theme';
+import { formatPrice } from '../utils/outfit';
 import { Button } from '../components/Button';
 import { AppText } from '../components/AppText';
+import { CLOTHES } from '../data/clothes';
 import {
   SAVE_TO_WARDROBE,
   REMOVE_FROM_WARDROBE,
@@ -24,32 +25,20 @@ export default function ProductDetailScreen() {
   const { params } = useRoute<RouteProp<ProductDetailRouteParams, 'ProductDetail'>>();
   const { add, remove, isSaved } = useWardrobe();
   const { colors } = useTheme();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [error, setError] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
-  useEffect(() => {
-    fetch(`https://fakestoreapi.com/products/${params.id}`)
-      .then((r) => r.json())
-      .then(setProduct)
-      .catch(() => setError(true));
-  }, [params.id]);
+  const product = CLOTHES.find((item) => item.id === params.id);
 
-  const saved = isSaved(product?.id ?? -1);
-
-  if (error)
-    return (
-      <View style={sheet.center(colors)}>
-        <AppText variant="label" color={colors.text}>
-          Failed to load item.
-        </AppText>
-      </View>
-    );
   if (!product)
     return (
       <View style={sheet.center(colors)}>
-        <ActivityIndicator size="large" color={colors.text} />
+        <AppText variant="label" color={colors.text}>
+          Item not found.
+        </AppText>
       </View>
     );
+
+  const saved = isSaved(product.id);
 
   const styles = StyleSheet.create({
     content: { paddingBottom: 80 },
@@ -61,10 +50,16 @@ export default function ProductDetailScreen() {
       marginTop: 10,
       marginBottom: 16,
       height: 420,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     image: {
       width: '100%',
       height: '100%',
+    },
+    fallback: {
+      fontSize: 40,
+      color: colors.subtext,
     },
     heart: {
       position: 'absolute',
@@ -112,7 +107,16 @@ export default function ProductDetailScreen() {
     <>
       <ScrollView style={sheet.page(colors)} contentContainerStyle={styles.content}>
         <View style={styles.imageCard}>
-          <Image source={{ uri: product.image }} style={styles.image} resizeMode="cover" />
+          {!imageError ? (
+            <Image
+              source={{ uri: product.image }}
+              style={styles.image}
+              resizeMode="cover"
+              onError={() => setImageError(true)}
+            />
+          ) : (
+            <Ionicons name="image-outline" size={60} color={colors.subtext} />
+          )}
           <Pressable
             style={styles.heart}
             onPress={(e: any) => {
@@ -136,13 +140,13 @@ export default function ProductDetailScreen() {
             {product.title}
           </AppText>
           <AppText variant="price" style={styles.price}>
-            ${product.price}
+            {formatPrice(product.price)}
           </AppText>
           <AppText variant="heading" style={styles.detailsHeading}>
             {DETAILS_HEADING}
           </AppText>
           <AppText variant="body" style={styles.description}>
-            {product.description}
+            {product.title} — {formatPrice(product.price)}. Weather-appropriate pick for your wardrobe.
           </AppText>
         </View>
       </ScrollView>

@@ -1,17 +1,17 @@
 import { createContext, useCallback, useContext, useEffect, useReducer, type ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Product } from '../types';
+import { Clothing } from '../types';
 
 const STORAGE_KEY = '@stylemate:wardrobe';
 
 type WardrobeState = {
-  items: Product[];
+  items: Clothing[];
 };
 
 type WardrobeAction =
-  | { type: 'ADD'; payload: Product }
+  | { type: 'ADD'; payload: Clothing }
   | { type: 'REMOVE'; payload: { id: number } }
-  | { type: 'HYDRATE'; payload: Product[] };
+  | { type: 'HYDRATE'; payload: Clothing[] };
 
 function wardrobeReducer(state: WardrobeState, action: WardrobeAction): WardrobeState {
   switch (action.type) {
@@ -28,8 +28,8 @@ function wardrobeReducer(state: WardrobeState, action: WardrobeAction): Wardrobe
 }
 
 type WardrobeContextValue = {
-  items: Product[];
-  add: (item: Product) => void;
+  items: Clothing[];
+  add: (item: Clothing) => void;
   remove: (id: number) => void;
   isSaved: (id: number) => boolean;
 };
@@ -45,7 +45,7 @@ export function WardrobeProvider({ children }: { children: ReactNode }) {
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
         if (raw !== null) {
           const parsed = JSON.parse(raw) as unknown;
-          const items = Array.isArray(parsed) ? (parsed as Product[]) : [];
+          const items = Array.isArray(parsed) ? (parsed as Clothing[]) : [];
           dispatch({ type: 'HYDRATE', payload: items });
         }
       } catch {
@@ -64,7 +64,7 @@ export function WardrobeProvider({ children }: { children: ReactNode }) {
     })();
   }, [state.items]);
 
-  const add = useCallback((item: Product) => dispatch({ type: 'ADD', payload: item }), []);
+  const add = useCallback((item: Clothing) => dispatch({ type: 'ADD', payload: item }), []);
   const remove = useCallback((id: number) => dispatch({ type: 'REMOVE', payload: { id } }), []);
   const isSaved = useCallback((id: number) => state.items.some((item) => item.id === id), [state.items]);
 

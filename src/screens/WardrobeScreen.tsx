@@ -4,8 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useWardrobe } from '../context/WardrobeContext';
-import { Product } from '../types';
+import { Clothing } from '../types';
 import { sheet, useTheme } from '../utils/theme';
+import { formatPrice } from '../utils/outfit';
 import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
 import Screen from "../components/Screen";
@@ -31,7 +32,7 @@ export default function WardrobeScreen() {
   );
 
   const renderItem = useCallback(
-    ({ item }: { item: Product }) => (
+    ({ item }: { item: Clothing }) => (
       <View style={s.row} key={item.id}>
         <View style={s.thumbWrap}>
           <Image source={{ uri: item.image }} style={s.thumb} resizeMode="cover" />
@@ -41,7 +42,7 @@ export default function WardrobeScreen() {
             {item.title}
           </AppText>
           <AppText variant="price" style={s.price}>
-            ${item.price}
+            {formatPrice(item.price)}
           </AppText>
         </View>
         <Pressable style={s.trash} onPress={(e: any) => {
