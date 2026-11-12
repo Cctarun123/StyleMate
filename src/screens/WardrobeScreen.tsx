@@ -1,10 +1,13 @@
 import { useCallback } from 'react';
-import { Pressable, View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useWardrobe } from '../context/WardrobeContext';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../types';
+import { theme, text, sheet } from '../utils/theme';
+import { SectionHeader } from '../components/SectionHeader';
+import { Button } from '../components/Button';
 
 type WardrobeNavigationParamList = {
   ProductDetail: { id: number };
@@ -21,42 +24,50 @@ export default function WardrobeScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => (
-      <View style={s.row}>
-        <ProductCard item={item} onPress={onPressItem} />
-        <PressableRemove item={item} onRemove={remove} />
+      <View style={s.row} key={item.id}>
+        <View style={s.cardWrap}>
+          <ProductCard item={item} onPress={onPressItem} />
+        </View>
+        <Button title="REMOVE ↗" onPress={() => remove(item.id)} variant="outline" />
       </View>
     ),
     [onPressItem, remove]
   );
 
   return (
-    <FlatList
-      data={items}
-      keyExtractor={(item) => String(item.id)}
-      renderItem={renderItem}
-      contentContainerStyle={s.content}
-      ListEmptyComponent={
-        <View style={s.center}>
-          <Text style={s.empty}>Nothing saved yet</Text>
-        </View>
-      }
-    />
-  );
-}
+    <View style={sheet.page()}>
+      <SectionHeader label="03 / WARDROBE" heading="YOUR LOCKER." />
 
-function PressableRemove({ item, onRemove }: { item: Product; onRemove: (id: number) => void }) {
-  return (
-    <Pressable style={s.remove} onPress={() => onRemove(item.id)}>
-      <Text style={s.removeText}>Remove</Text>
-    </Pressable>
+      {items.length === 0 ? (
+        <View style={s.empty}>
+          <Text style={[text.label(), { fontSize: 16 }]}>
+            NOTHING SAVED
+            <Text style={{ color: theme.colors.accent }}>.</Text>
+            {' YET'}
+            <Text style={{ color: theme.colors.accent }}>.</Text>
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={items}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderItem}
+          contentContainerStyle={s.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </View>
   );
 }
 
 const s = StyleSheet.create({
-  content: { padding: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 40 },
-  empty: { textAlign: 'center', fontSize: 16, color: '#666' },
-  remove: { paddingHorizontal: 10, paddingVertical: 4, backgroundColor: '#ffe5e5', borderRadius: 16 },
-  removeText: { fontSize: 12, color: '#b33', fontWeight: '600' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  cardWrap: { flex: 1, marginRight: 10 },
+  listContent: { padding: 16, paddingBottom: 90 },
+  empty: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 60 },
 });

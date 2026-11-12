@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { View, Text, Image, ScrollView, ActivityIndicator, StyleSheet } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useWardrobe } from "../context/WardrobeContext";
 import { Product } from "../types";
+import { theme, text, sheet } from "../utils/theme";
+import { Button } from "../components/Button";
 
 type ProductDetailRouteParams = {
   ProductDetail: { id: number };
@@ -21,31 +23,32 @@ export default function ProductDetailScreen() {
       .catch(() => setError(true));
   }, [params.id]);
 
-  if (error) return <View style={s.center}><Text>Failed to load item.</Text></View>;
-  if (!product) return <View style={s.center}><ActivityIndicator size="large" /></View>;
+  if (error) return <View style={sheet.center()}><Text style={[text.label(), { color: theme.colors.accent }]}>Failed to load item.</Text></View>;
+  if (!product) return <View style={sheet.center()}><ActivityIndicator size="large" color={theme.colors.text} /></View>;
 
   const saved = isSaved(product.id);
-  const onToggle = () => (saved ? remove(product.id) : add(product));
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 16 }}>
-      <Image source={{ uri: product.image }} style={s.img} resizeMode="contain" />
-      <Text style={s.title}>{product.title}</Text>
-      <Text style={s.price}>${product.price}</Text>
-      <Text style={s.desc}>{product.description}</Text>
-      <Pressable style={s.button} onPress={onToggle}>
-        <Text style={s.buttonText}>{saved ? 'Remove from wardrobe' : 'Save to wardrobe'}</Text>
-      </Pressable>
+    <ScrollView style={sheet.page()} contentContainerStyle={s.content}>
+      <Image source={{ uri: product.image }} style={s.img} resizeMode="cover" />
+      <View style={s.pad}>
+        <Text style={[text.heading(), s.title]}>{product.title.toUpperCase()}</Text>
+        <Text style={[text.label(), s.price]}>${product.price}</Text>
+        <Button
+          title={saved ? 'REMOVE ↗' : 'SAVE TO LOCKER ↗'}
+          onPress={() => (saved ? remove(product.id) : add(product))}
+          variant={saved ? 'outline' : 'primary'}
+          fullWidth
+        />
+      </View>
     </ScrollView>
   );
 }
 
 const s = StyleSheet.create({
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
-  img: { height: 260, width: "100%" },
-  title: { fontSize: 20, fontWeight: "600", marginTop: 12 },
-  price: { fontSize: 18, fontWeight: "700", marginVertical: 8 },
-  desc: { fontSize: 14, color: "#444" },
-  button: { marginTop: 16, paddingVertical: 10, paddingHorizontal: 16, backgroundColor: "#1e6fb5", borderRadius: 8, alignSelf: "flex-start" },
-  buttonText: { color: "#fff", fontWeight: "600" },
+  content: { paddingBottom: 90 },
+  img: { height: 420, width: '100%', backgroundColor: theme.colors.surface },
+  pad: { padding: 20 },
+  title: { fontSize: 40, letterSpacing: -1, marginBottom: 8 },
+  price: { fontSize: 16, marginBottom: 22 },
 });

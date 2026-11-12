@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -14,6 +13,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ProductCard';
 import { filterProductsByOutfit } from '../utils/outfit';
+import { theme, text, sheet } from '../utils/theme';
+import { SectionHeader } from '../components/SectionHeader';
 import { OutfitCategory, Product } from '../types';
 
 type HomeNavigationParamList = {
@@ -92,46 +93,40 @@ export default function HomeScreen() {
   const category: OutfitCategory = weather ? outfitForTemperature(weather.temperature) : 'casual';
   const suggested = filterProductsByOutfit(products, category);
 
-  if (weatherLoading && productsLoading) {
-    return (
-      <View style={s.center}><ActivityIndicator size="large" /></View>
-    );
-  }
-
   return (
     <ScrollView
+      style={sheet.page()}
       contentContainerStyle={s.content}
       refreshControl={
         <RefreshControl refreshing={weatherLoading || productsRefreshing} onRefresh={onRefresh} />
       }
     >
-      <View style={s.card}>
-        <Text style={s.cardTitle}>Weather today</Text>
+      <View style={s.weatherCard}>
+        <Text style={[text.label(), s.label]}>TODAY / TIRUPATI</Text>
+        <Text style={s.temp}>{weather != null ? `${weather.temperature}°` : '—'}</Text>
         {weatherLoading ? (
-          <Text style={s.temp}>Loading&hellip;</Text>
+          <Text style={[text.label(), s.label]}>Loading&hellip;</Text>
         ) : weatherError ? (
-          <View>
-            <Text style={s.temp}>Weather unavailable</Text>
-            <Pressable style={s.retry} onPress={fetchWeather}>
-              <Text style={s.retryText}>Retry</Text>
-            </Pressable>
-          </View>
-        ) : weather ? (
-          <Text style={s.temp}>{weather.temperature}°C &middot; {weather.condition}</Text>
+          <Text style={[text.label(), s.error]}>{weatherError}</Text>
         ) : (
-          <Text style={s.temp}>&mdash;</Text>
+          <>
+            <Text style={[text.label(), s.wear]}>WEAR: </Text>
+            <Text style={[text.heading(), s.outfit]}>{category.toUpperCase()}</Text>
+            <Text style={[text.heading(), s.period]}>.</Text>
+          </>
         )}
       </View>
 
-      {productsError && (
-        <Text style={s.errorText}>Products: {productsError}</Text>
-      )}
+      <SectionHeader label="02 / SUGGESTED" heading="SUGGESTED FOR TODAY" />
 
-      <Text style={s.sectionTitle}>Suggested for today</Text>
+      {productsError && <Text style={[text.label(), s.error]}>Products: {productsError}</Text>}
+
       {productsLoading ? (
-        <View style={s.center}><ActivityIndicator size="small" /></View>
+        <View style={sheet.center()}>
+          <ActivityIndicator size="large" color={theme.colors.text} />
+        </View>
       ) : suggested.length === 0 ? (
-        <Text style={s.empty}>No suggestions for today.</Text>
+        <Text style={[text.label(), s.empty]}>NOTHING SUGGESTED.</Text>
       ) : (
         <FlatList
           horizontal
@@ -139,11 +134,13 @@ export default function HomeScreen() {
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }: { item: Product }) => (
             <View style={s.cardWrap} key={item.id}>
-              <ProductCard item={item} onPress={(id: number) => navigation.navigate('ProductDetail', { id })} />
+              <ProductCard
+                item={item}
+                onPress={(id: number) => navigation.navigate('ProductDetail', { id })}
+              />
             </View>
           )}
           ItemSeparatorComponent={() => <View style={s.separator} />}
-          style={s.list}
           contentContainerStyle={s.listContent}
           showsHorizontalScrollIndicator={false}
         />
@@ -153,18 +150,27 @@ export default function HomeScreen() {
 }
 
 const s = StyleSheet.create({
-  content: { padding: 12, paddingBottom: 90 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  card: { backgroundColor: '#fff', borderRadius: 12, padding: 14, marginBottom: 12, elevation: 2 },
-  cardTitle: { fontSize: 18, fontWeight: '700', marginBottom: 6 },
-  temp: { fontSize: 22, fontWeight: '600' },
-  retry: { marginTop: 6, paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#eef6ff', borderRadius: 8 },
-  retryText: { color: '#1e6fb5', fontWeight: '600' },
-  errorText: { color: '#b33', textAlign: 'center', marginBottom: 8 },
-  sectionTitle: { fontSize: 18, fontWeight: '700', marginBottom: 8 },
-  empty: { textAlign: 'center', color: '#666', marginTop: 20 },
-  cardWrap: { width: 150, marginEnd: 10 },
-  separator: { width: 10 },
-  list: { height: 230 },
-  listContent: { paddingEnd: 12 },
+  content: { padding: 16, paddingBottom: 90 },
+  label: { color: theme.colors.subtext },
+  weatherCard: {
+    backgroundColor: theme.colors.surface,
+    borderWidth: theme.borderWidth,
+    borderColor: theme.colors.border,
+    padding: 20,
+    marginBottom: 24,
+  },
+  temp: {
+    ...text.heading(),
+    fontSize: 64,
+    marginBottom: 12,
+    letterSpacing: -2,
+  },
+  wear: { marginRight: 4 },
+  outfit: { fontSize: 24 },
+  period: { color: theme.colors.accent, fontSize: 24 },
+  error: { color: theme.colors.accent, marginBottom: 12 },
+  empty: { textAlign: 'center', marginTop: 20 },
+  cardWrap: { width: 150, marginEnd: 12 },
+  separator: { width: 12 },
+  listContent: { paddingEnd: 16 },
 });
