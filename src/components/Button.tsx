@@ -10,9 +10,10 @@ type Props = {
   variant?: Variant;
   fullWidth?: boolean;
   style?: ViewStyle;
+  disabled?: boolean;
 };
 
-export function Button({ title, onPress, variant = 'primary', fullWidth, style }: Props) {
+export function Button({ title, onPress, variant = 'primary', fullWidth, style, disabled }: Props) {
   const { colors, radius } = useTheme();
   const isPrimary = variant === 'primary';
 
@@ -47,6 +48,7 @@ export function Button({ title, onPress, variant = 'primary', fullWidth, style }
     <Pressable
       style={[s.base, isPrimary ? s.primary : s.outline, fullWidth ? s.fullWidth : null, style]}
       onPress={onPress}
+      disabled={disabled}
     >
       <AppText variant="label" color={isPrimary ? colors.onDark : colors.text} style={s.text}>
         {title}

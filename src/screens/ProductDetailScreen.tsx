@@ -4,7 +4,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useWardrobe } from '../context/WardrobeContext';
-import { sheet, text, useTheme } from '../utils/theme';
+import { useCart } from '../context/CartContext';
+import { sheet, text, useTheme, radius } from '../utils/theme';
 import { formatPrice } from '../utils/outfit';
 import { Button } from '../components/Button';
 import { AppText } from '../components/AppText';
@@ -14,6 +15,8 @@ import {
   REMOVE_FROM_WARDROBE,
   BACK_TO_SHOP,
   DETAILS_HEADING,
+  ADD_TO_CART,
+  SIZE_LABEL,
 } from '../constants/strings';
 
 type ProductDetailRouteParams = {
@@ -24,8 +27,10 @@ export default function ProductDetailScreen() {
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<ProductDetailRouteParams, 'ProductDetail'>>();
   const { add, remove, isSaved } = useWardrobe();
+  const { add: addToCart } = useCart();
   const { colors } = useTheme();
   const [imageError, setImageError] = useState(false);
+  const [size, setSize] = useState('M');
 
   const product = CLOTHES.find((item) => item.id === params.id);
 
@@ -85,6 +90,33 @@ export default function ProductDetailScreen() {
       lineHeight: 24,
       marginBottom: 14,
     },
+    sizeRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 10,
+      marginBottom: 14,
+    },
+    sizeLabel: {
+      ...text.label(colors),
+      color: colors.subtext,
+      marginRight: 8,
+      fontSize: 12,
+    },
+    chip: {
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: radius.pill,
+      borderWidth: 1,
+      borderColor: colors.border,
+      marginRight: 8,
+      alignItems: 'center',
+    },
+    chipSelected: {
+      backgroundColor: colors.dark,
+      borderColor: colors.dark,
+    },
+    chipText: { color: colors.subtext, fontSize: 12 },
+    chipTextSelected: { color: colors.onDark, fontWeight: '700' as const },
     detailsHeading: {
       ...text.heading(colors),
       marginBottom: 8,
@@ -142,6 +174,26 @@ export default function ProductDetailScreen() {
           <AppText variant="price" style={styles.price}>
             {formatPrice(product.price)}
           </AppText>
+          <View style={styles.sizeRow}>
+            <AppText variant="label" style={styles.sizeLabel}>
+              {SIZE_LABEL}
+            </AppText>
+            {['S', 'M', 'L', 'XL'].map((sz) => (
+              <Pressable
+                key={sz}
+                style={[styles.chip, size === sz && styles.chipSelected]}
+                onPress={() => setSize(sz)}
+              >
+                <AppText
+                  variant="label"
+                  style={size === sz ? [styles.chipText, styles.chipTextSelected] : styles.chipText}
+                >
+                  {sz}
+                </AppText>
+              </Pressable>
+            ))}
+          </View>
+          <Button title={ADD_TO_CART} onPress={() => addToCart(product, size)} variant="primary" fullWidth />
           <AppText variant="heading" style={styles.detailsHeading}>
             {DETAILS_HEADING}
           </AppText>

@@ -16,11 +16,17 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { WardrobeProvider } from './src/context/WardrobeContext';
+import { CartProvider } from './src/context/CartContext';
 import { colors } from './src/utils/theme';
 import HomeScreen from './src/screens/HomeScreen';
 import ExploreScreen from './src/screens/ExploreScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import WardrobeScreen from './src/screens/WardrobeScreen';
+import CartScreen from './src/screens/CartScreen';
+import CheckoutScreen from './src/screens/CheckoutScreen';
+import OrderSuccessScreen from './src/screens/OrderSuccessScreen';
+import OrdersScreen from './src/screens/OrdersScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -80,7 +86,8 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <WardrobeProvider>
-        <NavigationContainer theme={DefaultTheme}>
+        <CartProvider>
+          <NavigationContainer theme={DefaultTheme}>
           <StatusBar style="dark" />
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Tabs" component={Tabs} />
@@ -89,8 +96,22 @@ export default function App() {
               component={ProductDetailScreen}
               options={{ title: 'Product Details' }}
             />
+            <Stack.Screen name="Cart" component={CartScreen} options={{ title: 'Cart' }} />
+            <Stack.Screen
+              name="Checkout"
+              component={CheckoutScreen}
+              options={{ title: 'Checkout' }}
+            />
+            <Stack.Screen
+              name="OrderSuccess"
+              component={OrderSuccessScreen}
+              options={{ title: 'Order Confirmed' }}
+            />
+            <Stack.Screen name="Orders" component={OrdersScreen} options={{ title: 'My Orders' }} />
+            <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
           </Stack.Navigator>
         </NavigationContainer>
+      </CartProvider>
       </WardrobeProvider>
     </SafeAreaProvider>
   );

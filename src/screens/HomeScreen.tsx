@@ -13,6 +13,7 @@ import Screen from '../components/Screen';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useWeather, outfitForTemperature } from '../hooks/useWeather';
+import { useCart } from '../context/CartContext';
 import { getPicks, getTempBand } from '../utils/outfit';
 import { sheet, text, useTheme, radius } from '../utils/theme';
 import { AppText } from '../components/AppText';
@@ -34,6 +35,7 @@ import {
 
 type HomeNavigationParamList = {
   ProductDetail: { id: number };
+  Cart: undefined;
 };
 
 type HomeTabParamList = {
@@ -53,6 +55,7 @@ export default function HomeScreen() {
 
   const { weather, weatherLoading, weatherError, refresh: refreshWeather, isRainCode } =
     useWeather();
+  const { count: cartCount } = useCart();
   const [tab, setTab] = useState<string>(CATEGORY_ALL);
   const [query, setQuery] = useState('');
 
@@ -109,6 +112,19 @@ export default function HomeScreen() {
     iconButton: {
       padding: 6,
     },
+    badgeContainer: { position: 'relative' },
+    badge: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      backgroundColor: colors.dark,
+      borderRadius: 10,
+      paddingHorizontal: 6,
+      paddingVertical: 1,
+      minWidth: 20,
+      alignItems: 'center',
+    },
+    badgeText: { color: colors.onDark, fontSize: 10, fontWeight: '700' as const },
     bandRow: {
       paddingHorizontal: 16,
       marginBottom: 4,
@@ -203,8 +219,15 @@ export default function HomeScreen() {
         <AppText variant="title" style={styles.appName}>
           {APP_NAME}
         </AppText>
-        <Pressable style={styles.iconButton} onPress={() => navigation.navigate('Wardrobe')}>
-          <Ionicons name="bag-outline" size={26} color={colors.text} />
+        <Pressable style={styles.iconButton} onPress={() => navigation.navigate('Cart')}>
+          <View style={styles.badgeContainer}>
+            <Ionicons name="bag-outline" size={26} color={colors.text} />
+            {cartCount > 0 && (
+              <View style={styles.badge}>
+                <AppText variant="label" style={styles.badgeText}>{cartCount}</AppText>
+              </View>
+            )}
+          </View>
         </Pressable>
       </View>
 

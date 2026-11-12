@@ -49,3 +49,24 @@ export type Weather = {
   condition: string;
   code: number;
 };
+
+export type CartItem = Clothing & { size: string; quantity: number };
+
+export type Order = {
+  id: string;
+  items: CartItem[];
+  total: number;
+  date: string;
+  address: string;
+  method: string;
+};
+
+export type RootStackParamList = {
+  Tabs: undefined;
+  ProductDetail: { id: number };
+  Cart: undefined;
+  Checkout: undefined;
+  OrderSuccess: { order: Order };
+  Orders: undefined;
+  Profile: undefined;
+};
