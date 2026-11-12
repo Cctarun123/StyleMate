@@ -24,7 +24,7 @@ export function Button({ title, onPress, variant = 'primary', fullWidth }: Props
       onPress={onPress}
     >
       <AppText
-        variant="mono"
+        variant="label"
         color={isPrimary ? theme.colors.bg : theme.colors.accent}
         style={isPrimary ? s.primaryText : s.outlineText}
       >

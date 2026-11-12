@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text, TextStyle } from 'react-native';
-import { theme } from '../utils/theme';
+import { text } from '../utils/theme';
 
-type Variant = 'display' | 'heading' | 'label' | 'body' | 'mono';
+type Variant = 'display' | 'heading' | 'label' | 'body';
 
 type Props = {
   children: React.ReactNode;
@@ -12,35 +12,10 @@ type Props = {
 };
 
 const VARIANT_STYLES: Record<Variant, TextStyle> = {
-  display: {
-    fontFamily: theme.fonts.display,
-    color: theme.colors.text,
-    textTransform: 'uppercase',
-  },
-  heading: {
-    fontFamily: theme.fonts.display,
-    color: theme.colors.text,
-    textTransform: 'uppercase',
-    lineHeight: 1.25,
-  },
-  label: {
-    fontFamily: theme.fonts.mono,
-    fontSize: 11,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    color: theme.colors.subtext,
-  },
-  body: {
-    fontFamily: theme.fonts.body,
-    fontSize: 14,
-    lineHeight: 22,
-    color: theme.colors.text,
-  },
-  mono: {
-    fontFamily: theme.fonts.mono,
-    fontSize: 11,
-    color: theme.colors.text,
-  },
+  display: text.display(),
+  heading: text.heading(),
+  label: text.label(),
+  body: text.body(),
 };
 
 export function AppText({ children, variant = 'body', color, style }: Props) {

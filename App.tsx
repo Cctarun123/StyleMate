@@ -1,8 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
-import { Anton_400Regular } from '@expo-google-fonts/anton';
-import { SpaceMono_400Regular } from '@expo-google-fonts/space-mono';
+import { BarlowCondensed_600SemiBold, BarlowCondensed_700Bold } from '@expo-google-fonts/barlow-condensed';
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -63,10 +63,15 @@ function Tabs() {
 }
 
 export default function App() {
-  const [antonLoaded] = useFonts({ Anton: Anton_400Regular });
-  const [spaceMonoLoaded] = useFonts({ 'Space Mono': SpaceMono_400Regular });
+  const [fontsLoaded] = useFonts({
+    BarlowCondensed_600SemiBold,
+    BarlowCondensed_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+  });
 
-  if (!antonLoaded || !spaceMonoLoaded) {
+  if (!fontsLoaded) {
     return <View style={s.splash} />;
   }
 
@@ -80,12 +85,12 @@ export default function App() {
             headerShadowVisible: false,
             headerTintColor: theme.colors.text,
             headerTitleStyle: {
-              fontFamily: theme.fonts.mono,
+              fontFamily: theme.fonts.label,
               fontSize: 11,
               fontWeight: '400',
             },
             headerBackTitleStyle: {
-              fontFamily: theme.fonts.mono,
+              fontFamily: theme.fonts.label,
               fontSize: 11,
             },
           }}

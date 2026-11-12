@@ -48,9 +48,9 @@ export default function ProductDetailScreen() {
         <AppText variant="heading" style={s.title}>
           {product.title.toUpperCase()}
         </AppText>
-        <AppText variant="mono" color={theme.colors.text} style={s.price}>
+        <AppText variant="label" color={theme.colors.text} style={s.price}>
           ${product.price}
-          <AppText variant="mono" color={theme.colors.accent} style={s.priceSuffix}>
+          <AppText variant="label" color={theme.colors.accent} style={s.priceSuffix}>
              VIEW PIECE
           </AppText>
         </AppText>

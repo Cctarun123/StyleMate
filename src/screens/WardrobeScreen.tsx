@@ -41,13 +41,13 @@ export default function WardrobeScreen() {
 
       {items.length === 0 ? (
         <View style={s.empty}>
-          <AppText variant="mono" style={s.emptyText}>
+          <AppText variant="label" style={s.emptyText}>
             NOTHING SAVED
-            <AppText variant="mono" color={theme.colors.accent}>
+            <AppText variant="label" color={theme.colors.accent}>
               .
             </AppText>
             {' YET'}
-            <AppText variant="mono" color={theme.colors.accent}>
+            <AppText variant="label" color={theme.colors.accent}>
               .
             </AppText>
           </AppText>

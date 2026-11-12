@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
-    "@expo-google-fonts/anton": "^0.4.2",
-    "@expo-google-fonts/space-mono": "^0.4.2",
+    "@expo-google-fonts/barlow-condensed": "^0.4.1",
+    "@expo-google-fonts/inter": "^0.4.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.21.0",
     "@react-navigation/native": "^7.5.1",
@@ -23,6 +23,8 @@
     "@types/jest": "^29.5.0",
     "@types/react": "~19.3.0",
     "babel-jest": "^30.5.2",
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~58.0.4",
     "jest": "^30.5.2",
     "typescript": "~6.0.3"
   },
@@ -31,13 +33,27 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest"
+    "test": "jest",
+    "lint": "expo lint"
   },
   "private": true,
   "jest": {
     "testEnvironment": "node",
     "transform": {
-      "^.+\\.[tj]sx?$": ["babel-jest", { "presets": ["@babel/preset-typescript", ["@babel/preset-env", { "modules": "commonjs" }]] }]
+      "^.+\\.[tj]sx?$": [
+        "babel-jest",
+        {
+          "presets": [
+            "@babel/preset-typescript",
+            [
+              "@babel/preset-env",
+              {
+                "modules": "commonjs"
+              }
+            ]
+          ]
+        }
+      ]
     }
   }
 }

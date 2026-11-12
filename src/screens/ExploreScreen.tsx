@@ -69,7 +69,7 @@ export default function ExploreScreen() {
           {error}
         </AppText>
         <Pressable style={s.retry} onPress={reload}>
-          <AppText variant="mono" color={theme.colors.accent}>
+          <AppText variant="label" color={theme.colors.accent}>
             RETRY
           </AppText>
         </Pressable>
@@ -129,7 +129,7 @@ const s = StyleSheet.create({
     borderLeftWidth: 0,
     borderRightWidth: 0,
     color: theme.colors.text,
-    fontFamily: theme.fonts.mono,
+    fontFamily: theme.fonts.body,
     fontSize: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,

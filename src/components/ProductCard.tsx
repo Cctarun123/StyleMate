@@ -15,13 +15,13 @@ function ProductCard({ item, onPress, index }: Props) {
         </AppText>
       )}
       <Image source={{ uri: item.image }} style={s.img} resizeMode="cover" />
-      <AppText variant="mono" style={s.price}>
+      <AppText variant="label" style={s.price}>
         ${item.price}
       </AppText>
       <AppText variant="heading" style={s.title}>
         {item.title.toUpperCase()}
       </AppText>
-      <AppText variant="mono" color={theme.colors.accent} style={s.view}>
+      <AppText variant="label" color={theme.colors.accent} style={s.view}>
         VIEW PIECE ↗
       </AppText>
     </Pressable>

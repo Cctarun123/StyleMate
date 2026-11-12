@@ -8,7 +8,7 @@ export function AnnouncementBar() {
   const insets = useSafeAreaInsets();
   return (
     <View style={[s.container, { paddingTop: insets.top }]}>
-      <AppText variant="mono" color={theme.colors.accent} style={s.announcement}>
+      <AppText variant="label" color={theme.colors.accent} style={s.announcement}>
         {ANNOUNCEMENT}
       </AppText>
       <AppText variant="label" color={theme.colors.accent} style={s.dropLabel}>

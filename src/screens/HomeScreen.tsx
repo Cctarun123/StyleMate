@@ -260,7 +260,7 @@ export default function HomeScreen() {
 
       {/* ---------- HERO ---------- */}
       <View style={[s.section, s.hero]} onLayout={sectionLayout('hero')}>
-        <AppText variant="mono" color={theme.colors.accent} style={s.heroLabel}>
+        <AppText variant="label" color={theme.colors.accent} style={s.heroLabel}>
           {HERO.label}
         </AppText>
 
@@ -614,7 +614,7 @@ export default function HomeScreen() {
             placeholderTextColor="rgba(0,0,0,0.5)"
           />
           <Pressable style={s.newsletterSubmit} onPress={handleNewsletterSubmit}>
-            <AppText variant="mono" color={theme.colors.bg} style={s.newsletterSubmitText}>
+            <AppText variant="label" color={theme.colors.bg} style={s.newsletterSubmitText}>
               ↗
             </AppText>
           </Pressable>
@@ -834,7 +834,7 @@ const s = StyleSheet.create({
     color: theme.colors.bg,
     borderBottomWidth: 2,
     borderBottomColor: theme.colors.bg,
-    fontFamily: theme.fonts.mono,
+    fontFamily: theme.fonts.body,
     fontSize: 16,
     paddingVertical: 14,
     paddingHorizontal: 12,
