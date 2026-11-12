@@ -1,13 +1,17 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { theme, text } from '../utils/theme';
+import { theme } from '../utils/theme';
+import { AppText } from './AppText';
 import { ANNOUNCEMENT, NEXT_DROP_LABEL } from '../constants/brand';
 
 export function AnnouncementBar() {
   return (
     <View style={s.container}>
-      <View style={s.redSquare} />
-      <Text style={[text.label(), s.text]}>{ANNOUNCEMENT}</Text>
-      <Text style={[text.label(), s.label]}>{NEXT_DROP_LABEL} ↗</Text>
+      <AppText variant="mono" color={theme.colors.accent} style={s.announcement}>
+        {ANNOUNCEMENT}
+      </AppText>
+      <AppText variant="label" color={theme.colors.accent} style={s.dropLabel}>
+        {NEXT_DROP_LABEL} ↗
+      </AppText>
     </View>
   );
 }
@@ -15,25 +19,19 @@ export function AnnouncementBar() {
 const s = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.bg,
-    borderBottomWidth: theme.borderWidth,
+    borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     paddingVertical: 10,
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
   },
-  redSquare: {
-    width: 8,
-    height: 8,
-    backgroundColor: theme.colors.accent,
-  },
-  text: {
-    flex: 1,
+  announcement: {
+    fontSize: 10,
     textAlign: 'center',
+    width: '100%',
   },
-  label: {
-    color: theme.colors.accent,
+  dropLabel: {
+    marginTop: 4,
+    textAlign: 'center',
   },
 });

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -9,7 +9,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   useWindowDimensions,
   View,
@@ -21,15 +20,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ProductCard';
 import { filterProductsByOutfit } from '../utils/outfit';
-import { surface, theme, text, sheet, border } from '../utils/theme';
+import { surface, theme, sheet } from '../utils/theme';
 import { SectionHeader } from '../components/SectionHeader';
 import { AnnouncementBar } from '../components/AnnouncementBar';
+import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
 import { useCountdown, Countdown } from '../hooks/useCountdown';
 import { OutfitCategory, Product } from '../types';
 import {
   BRAND,
-  TAGLINE,
   HERO,
   COUNTDOWN,
   COLLECTION,
@@ -108,7 +107,6 @@ export default function HomeScreen() {
     'footer',
   ];
 
-  // Animation values per section key — initialized upfront so style refs exist on first render.
   const [anims] = useState<Record<string, { opacity: Animated.Value; y: Animated.Value }>>(
     () =>
       Object.fromEntries(
@@ -232,8 +230,6 @@ export default function HomeScreen() {
 
     setNewsletter((prev) => ({ ...prev, status: 'saving' }));
     try {
-      // No backend exists — save to AsyncStorage as a placeholder.
-      // TODO: Replace with a real newsletter API endpoint.
       const existing = await AsyncStorage.getItem(WAITLIST_STORAGE_KEY);
       const list = existing ? JSON.parse(existing) : [];
       if (!Array.isArray(list)) {
@@ -247,7 +243,8 @@ export default function HomeScreen() {
     }
   }, [newsletter.email, newsletter.consent]);
 
-  const heroFontSize = Math.min(96, screenWidth * 0.82);
+  const heroFontSize = Math.min(screenWidth * 0.2, 88);
+  const isNarrow = screenWidth < 400;
 
   return (
     <ScrollView
@@ -262,83 +259,54 @@ export default function HomeScreen() {
       <AnnouncementBar />
 
       {/* ---------- HERO ---------- */}
-      <View style={s.hero} onLayout={sectionLayout('hero')}>
-        <Animated.View
-          style={[
-            s.heroLabel,
-            { opacity: anims.hero?.opacity, transform: [{ translateY: anims.hero?.y }] },
-          ] as any}
-        >
-          <Text style={[text.label(), { color: theme.colors.accent }]}>{HERO.label}</Text>
-        </Animated.View>
+      <View style={[s.section, s.hero]} onLayout={sectionLayout('hero')}>
+        <AppText variant="mono" color={theme.colors.accent} style={s.heroLabel}>
+          {HERO.label}
+        </AppText>
 
         <View style={s.heroLines}>
-          <Animated.View
-            style={[
-              s.heroLine,
-              { opacity: anims.hero?.opacity, transform: [{ translateY: anims.hero?.y }] },
-            ] as any}
+          <AppText
+            variant="heading"
+            color={theme.colors.text}
+            style={{ fontSize: heroFontSize, lineHeight: heroFontSize }}
           >
-            <Text style={[text.heading(), { fontSize: heroFontSize, color: theme.colors.text }]}>
-              {HERO.lines[0]}
-            </Text>
-          </Animated.View>
-          <Animated.View
-            style={[
-              s.heroLine,
-              { opacity: anims.hero?.opacity, transform: [{ translateY: anims.hero?.y }] },
-            ] as any}
+            {HERO.lines[0]}
+          </AppText>
+          <AppText
+            variant="heading"
+            color={theme.colors.accent}
+            style={{ fontSize: heroFontSize, lineHeight: heroFontSize }}
           >
-            <Text style={[text.heading(), { fontSize: heroFontSize, color: theme.colors.accent }]}>
-              {HERO.lines[1]}
-            </Text>
-          </Animated.View>
+            {HERO.lines[1]}
+          </AppText>
         </View>
 
-        <Animated.View
-          style={[
-            s.stamp,
-            { opacity: anims.hero?.opacity, transform: [{ translateY: anims.hero?.y }, { rotate: '-8deg' }] },
-          ] as any}
-        >
-          <Text style={[text.label(), s.stampText]}>{HERO.stamp}</Text>
-        </Animated.View>
+        <View style={s.stampRow}>
+          <AppText
+            variant="label"
+            color={theme.colors.accent}
+            style={[s.stampText, { transform: [{ rotate: '-6deg' }] }]}
+          >
+            {HERO.stamp}
+          </AppText>
+        </View>
 
         <View style={s.heroSubLines}>
-          <Animated.View
-            style={[
-              s.subLine,
-              { opacity: anims.hero?.opacity, transform: [{ translateY: anims.hero?.y }] },
-            ] as any}
-          >
-            <Text style={[text.label(), { color: theme.colors.subtext }]}>{HERO.subLines[0]}</Text>
-          </Animated.View>
-          <Animated.View
-            style={[
-              s.subLine,
-              { opacity: anims.hero?.opacity, transform: [{ translateY: anims.hero?.y }] },
-            ] as any}
-          >
-            <Text style={[text.label(), { color: theme.colors.subtext }]}>{HERO.subLines[1]}</Text>
-          </Animated.View>
+          <AppText variant="body" color={theme.colors.subtext} style={s.subLine}>
+            {HERO.subLines[0]}
+          </AppText>
+          <AppText variant="body" color={theme.colors.subtext} style={s.subLine}>
+            {HERO.subLines[1]}
+          </AppText>
         </View>
 
-        {/* Decorative product images behind the headline */}
-        <View style={s.heroImages}>
+        <View style={s.heroImageRow}>
           {products.slice(0, 3).map((p) => (
-            <View
-              key={p.id}
-              style={[
-                s.heroImageWrap,
-                {
-                  transform: [
-                    { rotate: p.id % 3 === 0 ? '-6deg' : p.id % 3 === 1 ? '4deg' : '-3deg' },
-                  ],
-                },
-              ]}
-            >
+            <View key={p.id} style={s.heroImageCard}>
               <Image source={{ uri: p.image }} style={s.heroImage} resizeMode="cover" />
-              <Text style={[text.label(), s.heroImageCaption]}>AFTERHOURS / LONDON</Text>
+              <AppText variant="label" color={theme.colors.subtext} style={s.heroImageCaption}>
+                AFTERHOURS / LONDON
+              </AppText>
             </View>
           ))}
         </View>
@@ -360,35 +328,53 @@ export default function HomeScreen() {
       </View>
 
       {/* ---------- WEATHER STRIP ---------- */}
-      <View style={s.weatherSection} onLayout={sectionLayout('weather')}>
+      <View style={[s.section, s.weatherSection]} onLayout={sectionLayout('weather')}>
         <View style={[surface, s.weatherRow]}>
-          <Text style={[text.label(), s.weatherLabel]}>TONIGHT / TIRUPATI</Text>
-          <Text style={[text.heading(), s.weatherTemp]}>
+          <AppText variant="label" color={theme.colors.text} style={s.weatherLabel}>
+            TONIGHT / TIRUPATI
+          </AppText>
+          <AppText variant="heading" color={theme.colors.text} style={s.weatherTemp}>
             {weather != null ? `${weather.temperature}°` : '—'}
-          </Text>
+          </AppText>
           {weatherLoading ? (
-            <Text style={[text.label(), s.weatherWear]}>Loading&hellip;</Text>
+            <AppText variant="label" color={theme.colors.accent} style={s.weatherWear}>
+              Loading&hellip;
+            </AppText>
           ) : weatherError ? (
-            <Text style={[text.label(), s.weatherWear]}>{weatherError}</Text>
+            <AppText variant="label" color={theme.colors.accent} style={s.weatherWear}>
+              {weatherError}
+            </AppText>
           ) : (
             <>
-              <Text style={[text.label(), s.weatherWear]}>WEAR: </Text>
-              <Text style={[text.heading(), s.weatherOutfit]}>{category.toUpperCase()}</Text>
-              <Text style={[text.heading(), s.weatherPeriod]}>.</Text>
+              <AppText variant="label" color={theme.colors.subtext} style={s.weatherWear}>
+                WEAR:
+              </AppText>
+              <AppText variant="heading" color={theme.colors.text} style={s.weatherOutfit}>
+                {category.toUpperCase()}
+              </AppText>
+              <AppText variant="heading" color={theme.colors.accent} style={s.weatherPeriod}>
+                .
+              </AppText>
             </>
           )}
         </View>
 
         <SectionHeader label="01 / SUGGESTED" heading="SUGGESTED FOR TODAY" />
 
-        {productsError && <Text style={[text.label(), s.error]}>Products: {productsError}</Text>}
+        {productsError && (
+          <AppText variant="label" color={theme.colors.accent} style={s.error}>
+            Products: {productsError}
+          </AppText>
+        )}
 
         {productsLoading ? (
           <View style={sheet.center()}>
             <ActivityIndicator size="large" color={theme.colors.text} />
           </View>
         ) : suggested.length === 0 ? (
-          <Text style={[text.label(), s.empty]}>NOTHING SUGGESTED.</Text>
+          <AppText variant="label" color={theme.colors.subtext} style={s.empty}>
+            NOTHING SUGGESTED.
+          </AppText>
         ) : (
           <FlatList
             horizontal
@@ -396,7 +382,10 @@ export default function HomeScreen() {
             keyExtractor={(item) => String(item.id)}
             renderItem={({ item }: { item: Product }) => (
               <View style={s.cardWrap} key={item.id}>
-                <ProductCard item={item} onPress={(id: number) => navigation.navigate('ProductDetail', { id })} />
+                <ProductCard
+                  item={item}
+                  onPress={(id: number) => navigation.navigate('ProductDetail', { id })}
+                />
               </View>
             )}
             ItemSeparatorComponent={() => <View style={s.separator} />}
@@ -407,13 +396,15 @@ export default function HomeScreen() {
       </View>
 
       {/* ---------- COUNTDOWN ---------- */}
-      <View style={[surface, s.countdownSection]} onLayout={sectionLayout('countdown')}>
+      <View style={[surface, s.section, s.countdownSection]} onLayout={sectionLayout('countdown')}>
         <View style={s.countdownHeader}>
           <View style={s.dropLabelRow}>
             <View style={s.dot} />
-            <Text style={[text.label()]}>{COUNTDOWN.label}</Text>
+            <AppText variant="label">{COUNTDOWN.label}</AppText>
           </View>
-          <Text style={[text.heading(), s.countdownHeading]}>{COUNTDOWN.heading}</Text>
+          <AppText variant="heading" style={s.countdownHeading}>
+            {COUNTDOWN.heading}
+          </AppText>
         </View>
         <View style={s.countdownBoxes}>
           {[
@@ -423,8 +414,12 @@ export default function HomeScreen() {
             { label: 'SECONDS', value: String(drop.seconds).padStart(2, '0') },
           ].map((box) => (
             <View key={box.label} style={s.countdownBox}>
-              <Text style={[text.heading(), s.countdownNumeral]}>{box.value}</Text>
-              <Text style={[text.label(), s.countdownBoxLabel]}>{box.label}</Text>
+              <AppText variant="heading" style={s.countdownNumeral}>
+                {box.value}
+              </AppText>
+              <AppText variant="label" style={s.countdownBoxLabel}>
+                {box.label}
+              </AppText>
             </View>
           ))}
         </View>
@@ -437,16 +432,20 @@ export default function HomeScreen() {
       </View>
 
       {/* ---------- COLLECTION ---------- */}
-      <View style={s.collectionSection} onLayout={sectionLayout('collection')}>
+      <View style={[s.section, s.collectionSection]} onLayout={sectionLayout('collection')}>
         <SectionHeader label={COLLECTION.label} heading={COLLECTION.heading} />
-        <Text style={[text.body(), s.collectionDesc]}>{COLLECTION.description}</Text>
+        <AppText variant="body" color={theme.colors.subtext} style={s.collectionDesc}>
+          {COLLECTION.description}
+        </AppText>
         <Button
           title={COLLECTION.link}
           onPress={() => navigation.navigate('Explore')}
           variant="outline"
           fullWidth
         />
-        <Text style={[text.label(), s.collectionBadge]}>DROP / 010</Text>
+        <AppText variant="label" color={theme.colors.accent} style={s.collectionBadge}>
+          DROP / 010
+        </AppText>
         <View style={s.collectionGrid}>
           {products.slice(0, 4).map((item) => (
             <View key={item.id} style={s.collectionCard}>
@@ -460,46 +459,70 @@ export default function HomeScreen() {
       </View>
 
       {/* ---------- PREVIOUS CHAPTER ---------- */}
-      <View style={s.previousSection} onLayout={sectionLayout('previous')}>
+      <View style={[s.section, s.previousSection]} onLayout={sectionLayout('previous')}>
         <View style={s.previousDivider} />
-        <Text style={[text.label(), s.previousLabel]}>{PREVIOUS.label}</Text>
+        <AppText variant="label" style={s.previousLabel}>
+          {PREVIOUS.label}
+        </AppText>
         <View style={s.previousItems}>
           {PREVIOUS.items.map((item, i) => (
-            <Text key={i} style={[text.label(), s.previousItem]}>
+            <AppText key={i} variant="label" style={s.previousItem}>
               {item.replace(' — SOLD OUT', '')}
-              <Text style={s.previousSoldOut}> — SOLD OUT</Text>
-            </Text>
+              <AppText variant="label" color={theme.colors.accent} style={s.previousSoldOut}>
+                — SOLD OUT
+              </AppText>
+            </AppText>
           ))}
         </View>
         <View style={s.previousLinesRow}>
-          <Text style={[text.label(), s.previousLine]}>{PREVIOUS.lines[0]}</Text>
-          <Text style={[text.label(), s.previousLine]}>{PREVIOUS.lines[1]}</Text>
+          <AppText variant="label" style={s.previousLine}>
+            {PREVIOUS.lines[0]}
+          </AppText>
+          <AppText variant="label" style={s.previousLine}>
+            {PREVIOUS.lines[1]}
+          </AppText>
         </View>
       </View>
 
       {/* ---------- CAMPAIGN ---------- */}
-      <View style={s.campaignSection} onLayout={sectionLayout('campaign')}>
+      <View style={[s.section, s.campaignSection]} onLayout={sectionLayout('campaign')}>
         <SectionHeader label={CAMPAIGN.label} heading={CAMPAIGN.heading} />
         <View style={s.campaignSide}>
-          <Text style={[text.label(), s.campaignSideText]}>{CAMPAIGN.sideText}</Text>
-          <Text style={[text.label(), s.campaignCaption]}>{CAMPAIGN.caption}</Text>
+          <AppText variant="label" color={theme.colors.subtext} style={s.campaignSideText}>
+            {CAMPAIGN.sideText}
+          </AppText>
+          <AppText variant="label" color={theme.colors.subtext} style={s.campaignCaption}>
+            {CAMPAIGN.caption}
+          </AppText>
         </View>
         <View style={s.campaignLandscapeWrap}>
           <Image source={{ uri: CAMPAIGN_IMAGES.landscape }} style={s.campaignLandscape} resizeMode="cover" />
           <View style={s.campaignOverlay}>
-            <Text style={[text.heading(), s.campaignOverlayText]}>{CAMPAIGN.overlay}</Text>
-            <Text style={[text.heading(), s.campaignArrow]}>↗</Text>
+            <AppText variant="heading" color={theme.colors.text} style={s.campaignOverlayText}>
+              {CAMPAIGN.overlay}
+            </AppText>
+            <AppText variant="heading" color={theme.colors.accent} style={s.campaignArrow}>
+              ↗
+            </AppText>
           </View>
         </View>
         <View style={s.campaignPortraitWrap}>
           <Image source={{ uri: CAMPAIGN_IMAGES.portrait }} style={s.campaignPortrait} resizeMode="cover" />
           <View style={s.campaignPortraitCap}>
-            <Text style={[text.label(), s.campaignSecondCaption]}>{CAMPAIGN.secondCaption}</Text>
+            <AppText variant="label" color={theme.colors.subtext} style={s.campaignSecondCaption}>
+              {CAMPAIGN.secondCaption}
+            </AppText>
           </View>
-          <Text style={[text.label(), s.campaignLine]}>{CAMPAIGN.lines[0]}</Text>
-          <Text style={[text.label(), s.campaignLine]}>{CAMPAIGN.lines[1]}</Text>
+          <AppText variant="label" color={theme.colors.subtext} style={s.campaignLine}>
+            {CAMPAIGN.lines[0]}
+          </AppText>
+          <AppText variant="label" color={theme.colors.subtext} style={s.campaignLine}>
+            {CAMPAIGN.lines[1]}
+          </AppText>
         </View>
-        <Text style={[text.label(), s.campaignFooterLine]}>{CAMPAIGN.footerLine}</Text>
+        <AppText variant="label" color={theme.colors.subtext} style={s.campaignFooterLine}>
+          {CAMPAIGN.footerLine}
+        </AppText>
         <Button
           title={CAMPAIGN.link}
           onPress={() => navigation.navigate('Explore')}
@@ -509,22 +532,38 @@ export default function HomeScreen() {
       </View>
 
       {/* ---------- MINDSET ---------- */}
-      <View style={s.mindsetSection} onLayout={sectionLayout('mindset')}>
-        <Text style={[text.label(), s.mindsetLabel]}>{MINDSET.label}</Text>
+      <View style={[s.section, s.mindsetSection]} onLayout={sectionLayout('mindset')}>
+        <AppText variant="label" style={s.mindsetLabel}>
+          {MINDSET.label}
+        </AppText>
         <View style={s.mindsetHeading}>
-          <Text style={[text.heading(), s.mindsetHeadingLine]}>{MINDSET.headingLines[0]}</Text>
-          <Text style={[text.heading(), s.mindsetHeadingLineMuted]}>{MINDSET.headingLines[1]}</Text>
+          <AppText variant="heading" style={s.mindsetHeadingLine}>
+            {MINDSET.headingLines[0]}
+          </AppText>
+          <AppText variant="heading" style={s.mindsetHeadingLineMuted}>
+            {MINDSET.headingLines[1]}
+          </AppText>
         </View>
         <View style={s.mindsetPlus}>
-          <Text style={[text.heading(), s.mindsetPlusText]}>+</Text>
+          <AppText variant="heading" color={theme.colors.accent} style={s.mindsetPlusText}>
+            +
+          </AppText>
         </View>
-        <Text style={[text.body(), s.mindsetParagraph]}>{MINDSET.paragraph}</Text>
+        <AppText variant="body" color={theme.colors.subtext} style={s.mindsetParagraph}>
+          {MINDSET.paragraph}
+        </AppText>
         {MINDSET.statements.map((stmt, i) => (
           <View key={i} style={s.statementRow}>
-            <Text style={[text.heading(), s.statementNumber]}>{String(i + 1)}</Text>
+            <AppText variant="heading" color={theme.colors.accent} style={s.statementNumber}>
+              {String(i + 1)}
+            </AppText>
             <View style={s.statementContent}>
-              <Text style={[text.heading(), s.statementHeading]}>{stmt.heading}</Text>
-              <Text style={[text.body(), s.statementDescription]}>{stmt.description}</Text>
+              <AppText variant="heading" style={s.statementHeading}>
+                {stmt.heading}
+              </AppText>
+              <AppText variant="body" color={theme.colors.subtext} style={s.statementDescription}>
+                {stmt.description}
+              </AppText>
             </View>
             {i < MINDSET.statements.length - 1 && <View style={s.statementDivider} />}
           </View>
@@ -532,32 +571,56 @@ export default function HomeScreen() {
       </View>
 
       {/* ---------- NEWSLETTER ---------- */}
-      <View style={[s.newsletterSection, { backgroundColor: theme.colors.accent }]} onLayout={sectionLayout('newsletter')}>
-        <Text style={[text.label(), { color: theme.colors.bg }, s.newsletterLabel]}>{NEWSLETTER.label}</Text>
+      <View
+        style={[s.newsletterSection, { backgroundColor: theme.colors.accent }]}
+        onLayout={sectionLayout('newsletter')}
+      >
+        <AppText variant="label" color={theme.colors.bg} style={s.newsletterLabel}>
+          {NEWSLETTER.label}
+        </AppText>
         <View style={s.newsletterHeading}>
-          <Text style={[text.heading(), { color: theme.colors.bg, fontSize: Math.min(96, screenWidth * 0.85) }]}>
+          <AppText
+            variant="heading"
+            color={theme.colors.bg}
+            style={{ fontSize: Math.min(96, screenWidth * 0.85) }}
+          >
             {NEWSLETTER.headingLines[0]}
-          </Text>
-          <Text style={[text.heading(), { color: theme.colors.text, fontSize: Math.min(96, screenWidth * 0.85) }]}>
+          </AppText>
+          <AppText
+            variant="heading"
+            color={theme.colors.text}
+            style={{ fontSize: Math.min(96, screenWidth * 0.85) }}
+          >
             {NEWSLETTER.headingLines[1]}
-          </Text>
+          </AppText>
         </View>
         {NEWSLETTER.textLines.map((line, i) => (
-          <Text key={i} style={[text.body(), { color: theme.colors.bg, fontSize: 13 }, s.newsletterText]}>
+          <AppText
+            key={i}
+            variant="body"
+            color={theme.colors.bg}
+            style={{ ...s.newsletterText, textAlign: 'center' }}
+          >
             {line}
-          </Text>
+          </AppText>
         ))}
-        <Text style={[text.label(), { color: theme.colors.bg }, s.newsletterPrompt]}>{NEWSLETTER.prompt}</Text>
+        <AppText variant="label" color={theme.colors.bg} style={s.newsletterPrompt}>
+          {NEWSLETTER.prompt}
+        </AppText>
         <View style={s.newsletterInputWrap}>
           <TextInput
             style={s.newsletterInput}
             value={newsletter.email}
-            onChangeText={(t) => setNewsletter((prev) => ({ ...prev, email: t, errorMessage: null, status: 'idle' }))}
+            onChangeText={(t) =>
+              setNewsletter((prev) => ({ ...prev, email: t, errorMessage: null, status: 'idle' }))
+            }
             placeholder={NEWSLETTER.placeholder}
-            placeholderTextColor="rgba(0,0,0,0.45)"
+            placeholderTextColor="rgba(0,0,0,0.5)"
           />
           <Pressable style={s.newsletterSubmit} onPress={handleNewsletterSubmit}>
-            <Text style={s.newsletterSubmitText}>↗</Text>
+            <AppText variant="mono" color={theme.colors.bg} style={s.newsletterSubmitText}>
+              ↗
+            </AppText>
           </Pressable>
         </View>
         <Pressable
@@ -567,77 +630,96 @@ export default function HomeScreen() {
           }
         >
           <View style={s.checkbox} />
-          <Text style={[text.label(), { color: theme.colors.bg }]}>{NEWSLETTER.consent}</Text>
+          <AppText variant="label" color={theme.colors.bg}>
+            {NEWSLETTER.consent}
+          </AppText>
         </Pressable>
         {newsletter.status === 'error' && (
-          <Text style={[text.label(), { color: theme.colors.bg }, s.newsletterError]}>{newsletter.errorMessage}</Text>
+          <AppText variant="label" color={theme.colors.bg} style={s.newsletterError}>
+            {newsletter.errorMessage}
+          </AppText>
         )}
         {newsletter.status === 'success' && (
-          <Text style={[text.label(), { color: theme.colors.bg, fontWeight: 'bold' }, s.newsletterSuccess]}>
+          <AppText variant="label" color={theme.colors.bg} style={[s.newsletterSuccess, { fontWeight: 'bold' }]}>
             YOU'RE ON THE LIST.
-          </Text>
+          </AppText>
         )}
-        <Text style={[text.label(), { color: theme.colors.bg }, s.newsletterFooter]}>{NEWSLETTER.footer}</Text>
+        <AppText variant="label" color={theme.colors.bg} style={s.newsletterFooter}>
+          {NEWSLETTER.footer}
+        </AppText>
       </View>
 
       {/* ---------- FOOTER ---------- */}
-      <View style={s.footerSection} onLayout={sectionLayout('footer')}>
-        <Animated.View
-          style={[
-            s.footerWordmarkWrap,
-            { opacity: anims.footer?.opacity, transform: [{ translateY: anims.footer?.y }] },
-          ] as any}
-        >
-          <Text
-            style={[
-              text.heading(),
-              s.footerWordmark,
-              { fontSize: Math.min(140, screenWidth * 1.2) },
-            ]}
-          >
-            {BRAND}
-          </Text>
-        </Animated.View>
-        <View style={s.footerStatements}>
-          {FOOTER.statements.map((stmt, i) => (
-            <Text key={i} style={[text.label(), s.footerStatement]}>{stmt}</Text>
-          ))}
-        </View>
+      <View style={[s.section, s.footerSection]} onLayout={sectionLayout('footer')}>
         <View style={s.footerColumns}>
-          <View style={s.footerColumn}>
-            <Text style={[text.label(), s.footerColumnHeading]}>{FOOTER.columns.explore.heading}</Text>
+          <View style={[s.footerColumn, isNarrow && { width: '100%' }]}>
+            <AppText variant="label" color={theme.colors.text} style={s.footerColumnHeading}>
+              {FOOTER.columns.explore.heading}
+            </AppText>
             {FOOTER.columns.explore.links.map((link, i) => (
               <Pressable key={i} style={s.footerLink} onPress={() => alert('Coming soon')}>
-                <Text style={[text.label(), s.footerLinkText]}>{link}</Text>
+                <AppText variant="label" color={theme.colors.subtext} style={s.footerLinkText}>
+                  {link}
+                </AppText>
               </Pressable>
             ))}
           </View>
-          <View style={s.footerColumn}>
-            <Text style={[text.label(), s.footerColumnHeading]}>{FOOTER.columns.findUs.heading}</Text>
-            {FOOTER.columns.findUs.links.map((link, i) => {
-              const url = `https://www.${link.replace(' ↗', '').toLowerCase()}.com/nocturn`;
-              return (
-                <Pressable key={i} style={s.footerLink} onPress={() => alert('Coming soon')}>
-                  <Text style={[text.label(), s.footerLinkText]}>{link}</Text>
-                </Pressable>
-              );
-            })}
+          <View style={[s.footerColumn, isNarrow && { width: '100%' }]}>
+            <AppText variant="label" color={theme.colors.text} style={s.footerColumnHeading}>
+              {FOOTER.columns.findUs.heading}
+            </AppText>
+            {FOOTER.columns.findUs.links.map((link, i) => (
+              <Pressable key={i} style={s.footerLink} onPress={() => alert('Coming soon')}>
+                <AppText variant="label" color={theme.colors.subtext} style={s.footerLinkText}>
+                  {link}
+                </AppText>
+              </Pressable>
+            ))}
           </View>
-          <View style={s.footerColumn}>
-            <Text style={[text.label(), s.footerColumnHeading]}>{FOOTER.columns.smallPrint.heading}</Text>
+          <View style={[s.footerColumn, isNarrow && { width: '100%' }]}>
+            <AppText variant="label" color={theme.colors.text} style={s.footerColumnHeading}>
+              {FOOTER.columns.smallPrint.heading}
+            </AppText>
             {FOOTER.columns.smallPrint.links.map((link, i) => (
               <Pressable key={i} style={s.footerLink} onPress={() => alert('Coming soon')}>
-                <Text style={[text.label(), s.footerLinkText]}>{link}</Text>
+                <AppText variant="label" color={theme.colors.subtext} style={s.footerLinkText}>
+                  {link}
+                </AppText>
               </Pressable>
             ))}
           </View>
         </View>
+
+        <View style={s.footerWordmarkWrap}>
+          <AppText
+            variant="heading"
+            color='#1F1F1F'
+            style={{ ...s.footerWordmark, fontSize: Math.min(140, screenWidth * 1.2) }}
+          >
+            {BRAND}
+          </AppText>
+        </View>
+
+        <View style={s.footerStatements}>
+          {FOOTER.statements.map((stmt, i) => (
+            <AppText key={i} variant="label" color={theme.colors.subtext} style={s.footerStatement}>
+              {stmt}
+            </AppText>
+          ))}
+        </View>
+
         <View style={s.footerDivider} />
         <View style={s.footerFinePrint}>
-          <Text style={[text.label(), s.footerFineText]}>{FOOTER.copyright}</Text>
-          <Text style={[text.label(), s.footerFineText]}>{FOOTER.statements[0]}</Text>
+          <AppText variant="label" color={theme.colors.subtext} style={s.footerFineText}>
+            {FOOTER.copyright}
+          </AppText>
+          <AppText variant="label" color={theme.colors.subtext} style={s.footerFineText}>
+            {FOOTER.statements[0]}
+          </AppText>
           <Pressable style={s.footerBackToTop} onPress={scrollToTop}>
-            <Text style={[text.label(), s.footerBackToTopText]}>{FOOTER.backToTop}</Text>
+            <AppText variant="label" color={theme.colors.accent} style={s.footerBackToTopText}>
+              {FOOTER.backToTop}
+            </AppText>
           </Pressable>
         </View>
       </View>
@@ -648,50 +730,32 @@ export default function HomeScreen() {
 const s = StyleSheet.create({
   content: { paddingBottom: 90 },
 
-  hero: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 40 },
-  heroLabel: { marginBottom: 12 },
-  heroLines: { gap: 2 },
-  heroLine: { marginBottom: 2 },
-  stamp: {
-    position: 'absolute',
-    top: 14,
-    right: 14,
-    borderWidth: 1,
-    borderColor: theme.colors.accent,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  section: {
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
   },
-  stampText: { ...text.label(), color: theme.colors.accent },
-  heroSubLines: { gap: 6, marginTop: 16, marginBottom: 24 },
-  subLine: { textAlign: 'center' },
-  heroImages: {
-    position: 'absolute',
-    top: 120,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-  },
-  heroImageWrap: { width: 120, height: 120, overflow: 'hidden' },
-  heroImage: { width: '100%', height: '100%' },
-  heroImageCaption: {
-    ...text.label(),
-    color: theme.colors.subtext,
-    marginTop: 6,
-    textAlign: 'center',
-  },
-  heroButtons: { gap: 10, marginTop: 30 },
 
-  weatherSection: { paddingHorizontal: 16, marginBottom: 28 },
+  hero: { gap: 16 },
+  heroLabel: { marginBottom: 4 },
+  heroLines: { gap: 4 },
+  stampRow: { marginTop: 16, marginBottom: 16 },
+  stampText: {},
+  heroSubLines: { gap: 8, marginTop: 16 },
+  subLine: { textAlign: 'center', lineHeight: 20 },
+  heroImageRow: { flexDirection: 'row', gap: 8, marginTop: 24 },
+  heroImageCard: { flex: 1, alignItems: 'center' },
+  heroImage: { height: 140, width: '100%' },
+  heroImageCaption: { marginTop: 4, textAlign: 'center', fontSize: 10 },
+  heroButtons: { gap: 12, marginTop: 24 },
+
+  weatherSection: { gap: 16 },
   weatherRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    marginBottom: 16,
   },
   weatherLabel: { marginRight: 8 },
   weatherTemp: { fontSize: 56, letterSpacing: -2 },
@@ -699,41 +763,36 @@ const s = StyleSheet.create({
   weatherOutfit: { fontSize: 24 },
   weatherPeriod: { color: theme.colors.accent, fontSize: 24 },
 
-  countdownSection: { padding: 24, marginHorizontal: 16, marginBottom: 28 },
-  countdownHeader: { gap: 10, marginBottom: 20 },
+  countdownSection: { gap: 16 },
+  countdownHeader: { gap: 10, marginBottom: 16 },
   countdownHeading: { fontSize: 28, letterSpacing: -1 },
   dropLabelRow: { flexDirection: 'row', alignItems: 'center' },
   dot: { width: 6, height: 6, backgroundColor: theme.colors.accent, marginRight: 8 },
   countdownBoxes: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
   countdownBox: { alignItems: 'center', minWidth: 60 },
   countdownNumeral: { fontSize: 34, letterSpacing: -2, marginBottom: 2 },
-  countdownBoxLabel: { fontSize: 9 },
+  countdownBoxLabel: { fontSize: 11 },
 
-  collectionSection: { paddingHorizontal: 16, marginBottom: 28 },
-  collectionDesc: { fontSize: 13, marginBottom: 14 },
-  collectionBadge: { ...text.label(), color: theme.colors.accent, marginBottom: 16 },
-  collectionGrid: {
-    padding: 16,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  collectionCard: { width: '48%', paddingBottom: 16 },
+  collectionSection: { gap: 16 },
+  collectionDesc: { fontSize: 13, marginBottom: 16 },
+  collectionBadge: { color: theme.colors.accent, marginBottom: 16 },
+  collectionGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 16 },
+  collectionCard: { width: '48%', marginBottom: 16 },
 
-  previousSection: { paddingHorizontal: 16, marginBottom: 28 },
-  previousDivider: { height: 1, backgroundColor: theme.colors.border, marginBottom: 12 },
-  previousLabel: { marginBottom: 10 },
+  previousSection: { gap: 16 },
+  previousDivider: { height: 1, backgroundColor: theme.colors.border, marginBottom: 16 },
+  previousLabel: { marginBottom: 16 },
   previousItems: { flexDirection: 'row', gap: 14, marginBottom: 16 },
   previousItem: { flexWrap: 'wrap' },
-  previousSoldOut: { color: theme.colors.accent, fontSize: 10 },
+  previousSoldOut: { fontSize: 10 },
   previousLinesRow: { flexDirection: 'row', justifyContent: 'space-between' },
   previousLine: { fontSize: 11 },
 
-  campaignSection: { paddingHorizontal: 16, marginBottom: 28 },
-  campaignSide: { flexDirection: 'row', gap: 10, marginBottom: 12 },
+  campaignSection: { gap: 16 },
+  campaignSide: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   campaignSideText: { flex: 1 },
-  campaignCaption: { ...text.label(), color: theme.colors.subtext },
-  campaignLandscapeWrap: { height: 240, overflow: 'hidden', marginBottom: 12 },
+  campaignCaption: {},
+  campaignLandscapeWrap: { height: 240, overflow: 'hidden', marginBottom: 16 },
   campaignLandscape: { width: '100%', height: '100%' },
   campaignOverlay: {
     position: 'absolute',
@@ -744,35 +803,35 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   },
-  campaignOverlayText: { ...text.heading(), fontSize: 34, color: theme.colors.text },
-  campaignArrow: { ...text.heading(), fontSize: 28, color: theme.colors.accent },
-  campaignPortraitWrap: { height: 260, overflow: 'hidden', marginBottom: 12 },
+  campaignOverlayText: { fontSize: 34 },
+  campaignArrow: { fontSize: 28 },
+  campaignPortraitWrap: { height: 260, overflow: 'hidden', marginBottom: 16 },
   campaignPortrait: { width: '100%', height: '100%' },
-  campaignPortraitCap: { marginBottom: 10 },
-  campaignSecondCaption: { ...text.label(), color: theme.colors.subtext },
-  campaignLine: { ...text.label(), fontSize: 11 },
-  campaignFooterLine: { ...text.label(), color: theme.colors.subtext, marginTop: 12 },
+  campaignPortraitCap: { marginBottom: 16 },
+  campaignSecondCaption: {},
+  campaignLine: { fontSize: 11 },
+  campaignFooterLine: { marginTop: 16 },
 
-  mindsetSection: { paddingHorizontal: 16, marginBottom: 28 },
-  mindsetLabel: { marginBottom: 10 },
-  mindsetHeading: { flexDirection: 'row', gap: 6, marginBottom: 14 },
+  mindsetSection: { gap: 16 },
+  mindsetLabel: { marginBottom: 16 },
+  mindsetHeading: { flexDirection: 'row', gap: 6, marginBottom: 16 },
   mindsetHeadingLine: { fontSize: 46, letterSpacing: -2 },
   mindsetHeadingLineMuted: { fontSize: 46, letterSpacing: -2, color: theme.colors.subtext },
   mindsetPlus: { alignItems: 'center', marginBottom: 16 },
-  mindsetPlusText: { fontSize: 64, color: theme.colors.accent },
-  mindsetParagraph: { fontSize: 13, lineHeight: 20, color: theme.colors.subtext, marginBottom: 24 },
+  mindsetPlusText: { fontSize: 64 },
+  mindsetParagraph: { fontSize: 13, lineHeight: 20, marginBottom: 24 },
   statementRow: { flexDirection: 'row', borderBottomWidth: 1, borderColor: theme.colors.border, paddingVertical: 14 },
-  statementNumber: { color: theme.colors.accent, fontSize: 18, width: 24 },
+  statementNumber: { fontSize: 18, width: 24 },
   statementContent: { flex: 1 },
   statementHeading: { fontSize: 16, marginBottom: 4 },
-  statementDescription: { fontSize: 11, lineHeight: 16, color: theme.colors.subtext },
+  statementDescription: { fontSize: 11, lineHeight: 16 },
   statementDivider: { height: 1, backgroundColor: theme.colors.border, marginVertical: 8 },
 
-  newsletterSection: { padding: 32, paddingHorizontal: 24 },
-  newsletterLabel: { color: theme.colors.bg, marginBottom: 10 },
-  newsletterHeading: { gap: 2, marginBottom: 14 },
-  newsletterText: { marginBottom: 8, textAlign: 'center' },
-  newsletterPrompt: { color: theme.colors.bg, marginBottom: 12 },
+  newsletterSection: { gap: 16 },
+  newsletterLabel: { marginBottom: 16 },
+  newsletterHeading: { gap: 4, marginBottom: 16 },
+  newsletterText: { fontSize: 13, marginBottom: 8 },
+  newsletterPrompt: { marginBottom: 16 },
   newsletterInputWrap: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
   newsletterInput: {
     flex: 1,
@@ -785,7 +844,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 12,
   },
   newsletterSubmit: { marginLeft: 10 },
-  newsletterSubmitText: { fontSize: 16, color: theme.colors.bg },
+  newsletterSubmitText: { fontSize: 16 },
   newsletterConsent: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 16 },
   checkbox: {
     width: 16,
@@ -794,30 +853,25 @@ const s = StyleSheet.create({
     borderColor: theme.colors.bg,
     borderRadius: 0,
   },
-  newsletterError: { color: theme.colors.bg, marginBottom: 8 },
-  newsletterSuccess: { color: theme.colors.bg, marginBottom: 8 },
-  newsletterFooter: { color: theme.colors.bg, textAlign: 'center' },
+  newsletterError: { marginBottom: 8 },
+  newsletterSuccess: { marginBottom: 8, fontWeight: 'bold' },
+  newsletterFooter: { textAlign: 'center' },
 
-  footerSection: { paddingHorizontal: 16, paddingBottom: 40, borderTopWidth: 1, borderTopColor: theme.colors.border },
-  footerWordmarkWrap: { overflow: 'hidden', marginBottom: 20 },
-  footerWordmark: {
-    fontFamily: theme.fonts.display,
-    color: '#1F1F1F',
-    textTransform: 'uppercase',
-    lineHeight: 1,
-  },
-  footerStatements: { gap: 6, marginBottom: 24 },
-  footerStatement: { ...text.label(), color: theme.colors.subtext, fontSize: 10 },
-  footerColumns: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
+  footerSection: { gap: 16 },
+  footerColumns: { flexDirection: 'row', flexWrap: 'wrap', gap: 24, marginBottom: 24 },
   footerColumn: { width: '30%' },
-  footerColumnHeading: { ...text.label(), color: theme.colors.text, marginBottom: 12 },
+  footerColumnHeading: { marginBottom: 12 },
   footerLink: { marginBottom: 8 },
-  footerLinkText: { ...text.label(), color: theme.colors.subtext },
+  footerLinkText: {},
+  footerWordmarkWrap: { height: 80, overflow: 'hidden', marginBottom: 24 },
+  footerWordmark: { textTransform: 'uppercase', lineHeight: 1 },
+  footerStatements: { gap: 6, marginBottom: 24 },
+  footerStatement: { fontSize: 10 },
   footerDivider: { height: 1, backgroundColor: theme.colors.border, marginVertical: 16 },
   footerFinePrint: { gap: 8 },
-  footerFineText: { ...text.label(), fontSize: 10 },
+  footerFineText: { fontSize: 10 },
   footerBackToTop: { alignItems: 'center', marginTop: 4 },
-  footerBackToTopText: { ...text.label(), color: theme.colors.accent },
+  footerBackToTopText: {},
 
   error: { color: theme.colors.accent, marginBottom: 12 },
   empty: { textAlign: 'center', marginTop: 20 },

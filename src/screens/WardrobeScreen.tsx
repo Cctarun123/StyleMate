@@ -1,12 +1,13 @@
 import { useCallback } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
+import { View, FlatList, Pressable, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useWardrobe } from '../context/WardrobeContext';
 import ProductCard from '../components/ProductCard';
 import { Product } from '../types';
-import { theme, text, sheet } from '../utils/theme';
+import { theme, sheet } from '../utils/theme';
 import { SectionHeader } from '../components/SectionHeader';
+import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
 
 type WardrobeNavigationParamList = {
@@ -40,12 +41,16 @@ export default function WardrobeScreen() {
 
       {items.length === 0 ? (
         <View style={s.empty}>
-          <Text style={[text.label(), { fontSize: 16 }]}>
+          <AppText variant="mono" style={s.emptyText}>
             NOTHING SAVED
-            <Text style={{ color: theme.colors.accent }}>.</Text>
+            <AppText variant="mono" color={theme.colors.accent}>
+              .
+            </AppText>
             {' YET'}
-            <Text style={{ color: theme.colors.accent }}>.</Text>
-          </Text>
+            <AppText variant="mono" color={theme.colors.accent}>
+              .
+            </AppText>
+          </AppText>
         </View>
       ) : (
         <FlatList
@@ -70,4 +75,5 @@ const s = StyleSheet.create({
   cardWrap: { flex: 1, marginRight: 10 },
   listContent: { padding: 16, paddingBottom: 90 },
   empty: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 60 },
+  emptyText: { fontSize: 16, textAlign: 'center' },
 });

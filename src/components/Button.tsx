@@ -1,5 +1,6 @@
-import { Pressable, Text, StyleSheet } from 'react-native';
-import { theme, text } from '../utils/theme';
+import { Pressable, StyleSheet } from 'react-native';
+import { theme } from '../utils/theme';
+import { AppText } from './AppText';
 
 type Variant = 'primary' | 'outline';
 
@@ -22,7 +23,13 @@ export function Button({ title, onPress, variant = 'primary', fullWidth }: Props
       ]}
       onPress={onPress}
     >
-      <Text style={[text.body(), isPrimary ? s.primaryText : s.outlineText]}>{title}</Text>
+      <AppText
+        variant="mono"
+        color={isPrimary ? theme.colors.bg : theme.colors.accent}
+        style={isPrimary ? s.primaryText : s.outlineText}
+      >
+        {title}
+      </AppText>
     </Pressable>
   );
 }
@@ -42,22 +49,18 @@ const s = StyleSheet.create({
     borderColor: theme.colors.text,
   },
   primaryText: {
-    fontFamily: theme.fonts.mono,
     fontSize: 12,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    color: theme.colors.bg,
   },
   outline: {
     backgroundColor: 'transparent',
     borderColor: theme.colors.accent,
   },
   outlineText: {
-    fontFamily: theme.fonts.mono,
     fontSize: 11,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    color: theme.colors.accent,
   },
   fullWidth: {
     width: '100%',

@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import {
   View,
-  Text,
   TextInput,
   FlatList,
   Pressable,
@@ -14,8 +13,9 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useProducts } from "../hooks/useProducts";
 import ProductCard from "../components/ProductCard";
 import { Product } from "../types";
-import { theme, text, surface, sheet } from "../utils/theme";
+import { theme, surface, text, sheet } from "../utils/theme";
 import { SectionHeader } from "../components/SectionHeader";
+import { AppText } from "../components/AppText";
 
 type ExploreNavigationParamList = {
   ProductDetail: { id: number };
@@ -65,9 +65,13 @@ export default function ExploreScreen() {
   if (error)
     return (
       <View style={sheet.center()}>
-        <Text style={[text.label(), { color: theme.colors.accent }]}>{error}</Text>
+        <AppText variant="label" color={theme.colors.accent}>
+          {error}
+        </AppText>
         <Pressable style={s.retry} onPress={reload}>
-          <Text style={[text.body(), { color: theme.colors.accent }]}>RETRY</Text>
+          <AppText variant="mono" color={theme.colors.accent}>
+            RETRY
+          </AppText>
         </Pressable>
       </View>
     );
@@ -91,7 +95,12 @@ export default function ExploreScreen() {
             onPress={() => setCategory(c.value)}
             style={[s.chip, category === c.value && s.chipActive]}
           >
-            <Text style={[category === c.value ? s.chipTextActive : s.chipText]}>{c.label}</Text>
+            <AppText
+              variant="label"
+              color={category === c.value ? theme.colors.bg : theme.colors.text}
+            >
+              {c.label}
+            </AppText>
           </Pressable>
         ))}
       </View>
@@ -105,7 +114,7 @@ export default function ExploreScreen() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} />
         }
-        ListEmptyComponent={<Text style={s.empty}>NOTHING FOUND.</Text>}
+        ListEmptyComponent={<AppText variant="label" color={theme.colors.subtext}>NOTHING FOUND.</AppText>}
       />
     </View>
   );
@@ -121,7 +130,7 @@ const s = StyleSheet.create({
     borderRightWidth: 0,
     color: theme.colors.text,
     fontFamily: theme.fonts.mono,
-    fontSize: 14,
+    fontSize: 12,
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginBottom: 16,
@@ -135,13 +144,6 @@ const s = StyleSheet.create({
   },
   chipActive: {
     backgroundColor: theme.colors.accent,
-  },
-  chipText: {
-    ...text.label(),
-    fontSize: 10,
-  },
-  chipTextActive: {
-    color: theme.colors.bg,
   },
   listContent: { padding: 16, paddingBottom: 90 },
   cardWrap: { width: '50%', paddingRight: 12, paddingBottom: 14 },

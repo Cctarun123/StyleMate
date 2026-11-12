@@ -1,7 +1,8 @@
 import React from "react";
-import { Pressable, Image, Text, StyleSheet } from "react-native";
+import { Pressable, Image, StyleSheet } from "react-native";
 import { Product } from "../types";
 import { theme, surface, text } from "../utils/theme";
+import { AppText } from "./AppText";
 
 type Props = { item: Product; onPress: (id: number) => void; index?: number };
 
@@ -9,12 +10,20 @@ function ProductCard({ item, onPress, index }: Props) {
   return (
     <Pressable style={s.card} onPress={() => onPress(item.id)}>
       {index !== undefined && (
-        <Text style={s.index}>{String(index + 1).padStart(2, '0')}</Text>
+        <AppText variant="label" style={s.index}>
+          {String(index + 1).padStart(2, '0')}
+        </AppText>
       )}
       <Image source={{ uri: item.image }} style={s.img} resizeMode="cover" />
-      <Text style={s.price}>${item.price}</Text>
-      <Text style={s.title}>{item.title.toUpperCase()}</Text>
-      <Text style={s.view}>VIEW PIECE ↗</Text>
+      <AppText variant="mono" style={s.price}>
+        ${item.price}
+      </AppText>
+      <AppText variant="heading" style={s.title}>
+        {item.title.toUpperCase()}
+      </AppText>
+      <AppText variant="mono" color={theme.colors.accent} style={s.view}>
+        VIEW PIECE ↗
+      </AppText>
     </Pressable>
   );
 }
@@ -37,18 +46,18 @@ const s = StyleSheet.create({
     color: theme.colors.subtext,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    fontSize: 10,
+    fontSize: 11,
     zIndex: 1,
   },
   img: { height: 170, width: '100%', backgroundColor: theme.colors.surface, marginBottom: 10 },
   price: {
     ...text.label(),
-    fontSize: 12,
+    fontSize: 14,
     marginBottom: 4,
   },
   title: {
     ...text.heading(),
-    fontSize: 15,
+    fontSize: 14,
     marginBottom: 10,
   },
   view: {
