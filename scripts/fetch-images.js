@@ -22,6 +22,8 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
+const { generateImagesTs } = require('./gen-images');
+
 const ROOT = path.resolve(__dirname, '..');
 const CLOTHES_PATH = path.join(ROOT, 'src', 'data', 'clothes.ts');
 const ASSETS_DIR = path.join(ROOT, 'assets', 'clothes');
@@ -193,6 +195,10 @@ async function main() {
   }
 
   writeImagesTs(items.map((item) => item.id));
+
+  // Regenerate the mapping from what actually exists on disk, so the
+  // bundled reference never points at a missing image.
+  generateImagesTs();
 
   console.log(`\nProcessed ${items.length} item(s).`);
   if (failed.length > 0) {

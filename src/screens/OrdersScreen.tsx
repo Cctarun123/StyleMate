@@ -1,6 +1,7 @@
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, StyleSheet, View } from 'react-native';
 import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import { Order } from '../types';
 import { sheet, text, useTheme } from '../utils/theme';
 import { formatPrice } from '../utils/outfit';
@@ -8,6 +9,7 @@ import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
 import Screen from '../components/Screen';
 import { ORDERS_TITLE, ORDERS_EMPTY } from '../constants/strings';
+import { clothesImages } from '../data/clothesImages';
 
 export default function OrdersScreen() {
   const { colors } = useTheme();
@@ -43,6 +45,7 @@ export default function OrdersScreen() {
     empty: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 },
     row: {
       flexDirection: 'row',
+      alignItems: 'center',
       justifyContent: 'space-between',
       paddingHorizontal: 20,
       paddingVertical: 14,
@@ -53,24 +56,49 @@ export default function OrdersScreen() {
     id: { ...text.body(colors), fontWeight: '600' as const },
     meta: { ...text.label(colors), color: colors.subtext, marginTop: 2 },
     total: { ...text.price(colors) },
+    thumbWrap: {
+      width: 50,
+      height: 50,
+      borderRadius: 8,
+      backgroundColor: colors.tile,
+      overflow: 'hidden',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    thumb: {
+      width: '100%',
+      height: '100%',
+    },
   });
 
   const renderItem = useCallback(
-    ({ item }: { item: Order }) => (
-      <View style={s.row}>
-        <View style={s.info}>
-          <AppText variant="body" style={s.id}>
-            {item.id}
-          </AppText>
-          <AppText variant="label" style={s.meta}>
-            {new Date(item.date).toLocaleDateString()} · {item.items.length} items
+    ({ item }: { item: Order }) => {
+      const firstItem = item.items[0];
+      const imageSource = firstItem ? clothesImages[firstItem.id] : undefined;
+      return (
+        <View style={s.row}>
+          {imageSource != null ? (
+            <Image source={imageSource} style={s.thumb} resizeMode="cover" />
+          ) : (
+            <View style={s.thumbWrap}>
+              <Ionicons name="image-outline" size={24} color={colors.subtext} />
+            </View>
+          )}
+          <View style={s.info}>
+            <AppText variant="body" style={s.id}>
+              {item.id}
+            </AppText>
+            <AppText variant="label" style={s.meta}>
+              {new Date(item.date).toLocaleDateString()} · {item.items.length} items
+            </AppText>
+          </View>
+          <AppText variant="price" style={s.total}>
+            {formatPrice(item.total)}
           </AppText>
         </View>
-        <AppText variant="price" style={s.total}>
-          {formatPrice(item.total)}
-        </AppText>
-      </View>
-    ),
+      );
+    },
     []
   );
 

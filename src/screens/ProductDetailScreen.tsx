@@ -10,6 +10,7 @@ import { formatPrice } from '../utils/outfit';
 import { Button } from '../components/Button';
 import { AppText } from '../components/AppText';
 import { CLOTHES } from '../data/clothes';
+import { clothesImages } from '../data/clothesImages';
 import {
   SAVE_TO_WARDROBE,
   REMOVE_FROM_WARDROBE,
@@ -139,9 +140,9 @@ export default function ProductDetailScreen() {
     <>
       <ScrollView style={sheet.page(colors)} contentContainerStyle={styles.content}>
         <View style={styles.imageCard}>
-          {!imageError ? (
+          {clothesImages[product.id] != null && !imageError ? (
             <Image
-              source={{ uri: product.image }}
+              source={clothesImages[product.id]}
               style={styles.image}
               resizeMode="cover"
               onError={() => setImageError(true)}

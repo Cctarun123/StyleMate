@@ -18,6 +18,7 @@ function ProductTile({ item, onPress }: Props) {
   const { add, remove, isSaved } = useWardrobe();
   const saved = isSaved(item.id);
   const [imageError, setImageError] = useState(false);
+  const imageSource = clothesImages[item.id];
 
   const styles = StyleSheet.create({
     tile: {
@@ -73,9 +74,9 @@ function ProductTile({ item, onPress }: Props) {
   return (
     <Pressable style={styles.tile} onPress={() => onPress(item.id)}>
       <View style={styles.imageWrap}>
-        {!imageError ? (
+        {imageSource != null && !imageError ? (
           <Image
-            source={clothesImages[item.id]}
+            source={imageSource}
             style={styles.image}
             resizeMode="contain"
             onError={() => setImageError(true)}

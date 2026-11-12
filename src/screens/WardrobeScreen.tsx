@@ -39,7 +39,13 @@ export default function WardrobeScreen() {
     ({ item }: { item: Clothing }) => (
       <View style={s.row} key={item.id}>
         <View style={s.thumbWrap}>
-          <Image source={clothesImages[item.id]} style={s.thumb} resizeMode="cover" />
+          {clothesImages[item.id] != null ? (
+            <Image source={clothesImages[item.id]} style={s.thumb} resizeMode="cover" />
+          ) : (
+            <View style={s.thumbWrap}>
+              <Ionicons name="image-outline" size={50} color={colors.subtext} />
+            </View>
+          )}
         </View>
         <View style={s.info}>
           <AppText variant="body" style={s.title}>

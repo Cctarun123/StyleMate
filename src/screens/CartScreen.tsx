@@ -7,6 +7,7 @@ import { RootStackParamList, CartItem } from '../types';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/outfit';
 import { text, useTheme } from '../utils/theme';
+import { clothesImages } from '../data/clothesImages';
 import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
 import Screen from '../components/Screen';
@@ -44,7 +45,13 @@ export default function CartScreen() {
     ({ item }: { item: CartItem }) => (
       <View style={s.row}>
         <View style={s.thumbWrap}>
-          <Image source={{ uri: item.image }} style={s.thumb} resizeMode="cover" />
+          {clothesImages[item.id] != null ? (
+            <Image source={clothesImages[item.id]} style={s.thumb} resizeMode="cover" />
+          ) : (
+            <View style={s.thumbWrap}>
+              <Ionicons name="image-outline" size={30} color={colors.subtext} />
+            </View>
+          )}
         </View>
         <View style={s.info}>
           <AppText variant="body" style={s.title}>
