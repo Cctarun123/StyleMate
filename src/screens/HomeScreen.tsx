@@ -10,8 +10,8 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
+import { Screen } from '../components/Screen';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useProducts } from '../hooks/useProducts';
@@ -92,7 +92,6 @@ function outfitForTemperature(temperature: number): 'jackets' | 'light' | 'casua
 
 export default function HomeScreen() {
   const navigation = useNavigation<HomeNavigationProp>();
-  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   const {
@@ -170,7 +169,7 @@ export default function HomeScreen() {
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 16,
-      paddingTop: insets.top + 8,
+      paddingTop: 8,
       paddingBottom: 16,
     },
     appName: {
@@ -245,6 +244,7 @@ export default function HomeScreen() {
   });
 
   return (
+    <Screen>
     <ScrollView
       style={sheet.page(colors)}
       contentContainerStyle={styles.content}
@@ -336,5 +336,6 @@ export default function HomeScreen() {
         </View>
       )}
     </ScrollView>
+    </Screen>
   );
 }

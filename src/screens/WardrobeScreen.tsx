@@ -56,9 +56,6 @@ export default function WardrobeScreen() {
 
   return (
     <View style={sheet.page(colors)}>
-      <AppText variant="label" style={s.label}>
-        01 / WARDROBE
-      </AppText>
       <AppText variant="heading" style={s.titleText}>
         {WARDROBE_TITLE}
       </AppText>
@@ -84,24 +81,21 @@ export default function WardrobeScreen() {
         />
       )}
 
-      <View style={[s.bottomBar, { backgroundColor: colors.dark }]}>
-        <AppText variant="body" color={colors.onDark} style={s.bottomBarText}>
-          {items.length} {WARDROBE_COUNT_BAR}
-        </AppText>
-      </View>
+      {items.length > 0 && (
+        <View style={[s.bottomBar, { backgroundColor: colors.dark }]}>
+          <AppText variant="body" color={colors.onDark} style={s.bottomBarText}>
+            {items.length} {WARDROBE_COUNT_BAR}
+          </AppText>
+        </View>
+      )}
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  label: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 4,
-  },
   titleText: {
-    paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
   },
   row: {
     flexDirection: 'row',
@@ -132,7 +126,7 @@ const s = StyleSheet.create({
   trash: {
     padding: 6,
   },
-  listContent: { paddingHorizontal: 20, paddingBottom: 100 },
+  listContent: { paddingHorizontal: 20, paddingBottom: 32 },
   empty: {
     flex: 1,
     justifyContent: 'center',

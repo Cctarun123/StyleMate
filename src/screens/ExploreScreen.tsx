@@ -63,13 +63,14 @@ export default function ExploreScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: Product }) => (
-      <ProductTile item={item} onPress={onPressItem} />
+      <View style={{ width: '48%', marginBottom: 12 }}>
+        <ProductTile item={item} onPress={onPressItem} />
+      </View>
     ),
     [onPressItem]
   );
 
   const styles = StyleSheet.create({
-    listContent: { padding: 16, paddingBottom: 90 },
     empty: { textAlign: 'center', marginTop: 40 },
     retry: { marginTop: 12 },
   });
@@ -92,16 +93,21 @@ export default function ExploreScreen() {
 
   return (
     <View style={sheet.page(colors)}>
-      <SearchBar value={query} onChangeText={setQuery} placeholder="Search clothes…" />
+      <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 12 }}>
+        <SearchBar value={query} onChangeText={setQuery} placeholder="Search clothes…" />
+      </View>
 
-      <CategoryTabs selected={tab} onSelect={setTab} />
+      <View style={{ paddingHorizontal: 16 }}>
+        <CategoryTabs selected={tab} onSelect={setTab} />
+      </View>
 
       <FlatList
         data={data}
         keyExtractor={(item) => String(item.id)}
         renderItem={renderItem}
         numColumns={2}
-        contentContainerStyle={styles.listContent}
+        columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingBottom: 32 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={refresh} />
         }

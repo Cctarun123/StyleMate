@@ -27,7 +27,7 @@ function ProductTile({ item, onPress }: Props) {
     imageWrap: {
       position: 'relative',
       width: '100%',
-      aspectRatio: 1,
+      height: 150,
       backgroundColor: colors.card,
       borderRadius: radius.sm,
       overflow: 'hidden',
@@ -35,7 +35,7 @@ function ProductTile({ item, onPress }: Props) {
     },
     image: {
       width: '100%',
-      height: '100%',
+      height: 150,
     },
     heart: {
       position: 'absolute',
