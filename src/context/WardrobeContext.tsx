@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useReducer, type ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from './AuthContext';
 import { Clothing } from '../types';
 
-const STORAGE_KEY = '@stylemate:wardrobe';
+const WARDROBE_STORAGE_KEY = '@stylemate:wardrobe';
 
 type WardrobeState = {
   items: Clothing[];
@@ -37,12 +38,14 @@ type WardrobeContextValue = {
 const WardrobeContext = createContext<WardrobeContextValue | null>(null);
 
 export function WardrobeProvider({ children }: { children: ReactNode }) {
+  const { email } = useAuth();
+  const storageKey = email ? `${WARDROBE_STORAGE_KEY}:${email}` : `${WARDROBE_STORAGE_KEY}:guest`;
   const [state, dispatch] = useReducer(wardrobeReducer, { items: [] });
 
   useEffect(() => {
     (async () => {
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        const raw = await AsyncStorage.getItem(storageKey);
         if (raw !== null) {
           const parsed = JSON.parse(raw) as unknown;
           const items = Array.isArray(parsed) ? (parsed as Clothing[]) : [];
@@ -57,12 +60,12 @@ export function WardrobeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+        await AsyncStorage.setItem(storageKey, JSON.stringify(state.items));
       } catch {
         // Persistence failed — wardrobe state is still kept in memory.
       }
     })();
-  }, [state.items]);
+  }, [state.items, storageKey]);
 
   const add = useCallback((item: Clothing) => dispatch({ type: 'ADD', payload: item }), []);
   const remove = useCallback((id: number) => dispatch({ type: 'REMOVE', payload: { id } }), []);

@@ -15,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { AuthProvider } from './src/context/AuthContext';
+import { useAuth } from './src/context/AuthContext';
 import { WardrobeProvider } from './src/context/WardrobeContext';
 import { CartProvider } from './src/context/CartContext';
 import { colors } from './src/utils/theme';
@@ -27,6 +29,8 @@ import CheckoutScreen from './src/screens/CheckoutScreen';
 import OrderSuccessScreen from './src/screens/OrderSuccessScreen';
 import OrdersScreen from './src/screens/OrdersScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,6 +39,7 @@ const TAB_ICONS: Record<string, { outline: string; filled: string }> = {
   Home: { outline: 'home-outline', filled: 'home' },
   Explore: { outline: 'search-outline', filled: 'search' },
   Wardrobe: { outline: 'heart-outline', filled: 'heart' },
+  Profile: { outline: 'person-outline', filled: 'person' },
 };
 
 function Tabs() {
@@ -66,7 +71,66 @@ function Tabs() {
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
       <Tab.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explore' }} />
       <Tab.Screen name="Wardrobe" component={WardrobeScreen} options={{ title: 'Wardrobe' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </Tab.Navigator>
+  );
+}
+
+function MainStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Tabs" component={Tabs} />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{ title: 'Product Details' }}
+      />
+      <Stack.Screen name="Cart" component={CartScreen} options={{ title: 'Cart' }} />
+      <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ title: 'Checkout' }} />
+      <Stack.Screen
+        name="OrderSuccess"
+        component={OrderSuccessScreen}
+        options={{ title: 'Order Confirmed' }}
+      />
+      <Stack.Screen name="Orders" component={OrdersScreen} options={{ title: 'My Orders' }} />
+    </Stack.Navigator>
+  );
+}
+
+function AuthStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ title: 'Create account' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function AppContent() {
+  const { status } = useAuth();
+  return (
+    <SafeAreaProvider>
+      <StatusBar style="dark" />
+      {status === 'loading' ? (
+        <View style={s.splash} />
+      ) : status === 'signedIn' ? (
+        <WardrobeProvider>
+          <CartProvider>
+            <NavigationContainer theme={DefaultTheme}>
+              <MainStack />
+            </NavigationContainer>
+          </CartProvider>
+        </WardrobeProvider>
+      ) : (
+        <NavigationContainer theme={DefaultTheme}>
+          <AuthStack />
+        </NavigationContainer>
+      )}
+    </SafeAreaProvider>
   );
 }
 
@@ -84,36 +148,9 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <WardrobeProvider>
-        <CartProvider>
-          <NavigationContainer theme={DefaultTheme}>
-          <StatusBar style="dark" />
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Tabs" component={Tabs} />
-            <Stack.Screen
-              name="ProductDetail"
-              component={ProductDetailScreen}
-              options={{ title: 'Product Details' }}
-            />
-            <Stack.Screen name="Cart" component={CartScreen} options={{ title: 'Cart' }} />
-            <Stack.Screen
-              name="Checkout"
-              component={CheckoutScreen}
-              options={{ title: 'Checkout' }}
-            />
-            <Stack.Screen
-              name="OrderSuccess"
-              component={OrderSuccessScreen}
-              options={{ title: 'Order Confirmed' }}
-            />
-            <Stack.Screen name="Orders" component={OrdersScreen} options={{ title: 'My Orders' }} />
-            <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </CartProvider>
-      </WardrobeProvider>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

@@ -7,9 +7,10 @@ import {
   type ReactNode,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from './AuthContext';
 import { Clothing } from '../types';
 
-const STORAGE_KEY = '@stylemate:cart';
+const CART_STORAGE_KEY = '@stylemate:cart';
 
 export type CartItem = Clothing & { size: string; quantity: number };
 
@@ -85,12 +86,14 @@ type CartContextValue = {
 const CartContext = createContext(null as unknown as CartContextValue | null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { email } = useAuth();
+  const storageKey = email ? `${CART_STORAGE_KEY}:${email}` : `${CART_STORAGE_KEY}:guest`;
   const [state, dispatch] = useReducer(cartReducer, { items: [] });
 
   useEffect(() => {
     (async () => {
       try {
-        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+        const raw = await AsyncStorage.getItem(storageKey);
         if (raw !== null) {
           const parsed = JSON.parse(raw) as unknown;
           const items = Array.isArray(parsed) ? (parsed as CartItem[]) : [];
@@ -105,12 +108,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+        await AsyncStorage.setItem(storageKey, JSON.stringify(state.items));
       } catch {
         // Persistence failed — cart state is still kept in memory.
       }
     })();
-  }, [state.items]);
+  }, [state.items, storageKey]);
 
   const add = useCallback(
     (product: Clothing, size: string) =>
