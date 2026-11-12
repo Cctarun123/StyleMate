@@ -33,7 +33,7 @@ const navigationTheme = {
 function TabButton({ children, onPress, style }: BottomTabBarButtonProps) {
   return (
     <Pressable onPress={onPress} style={[s.tabItem, style]}>
-      <Text style={[text.label(), { color: theme.colors.subtext }]}>{children}</Text>
+      <Text style={[text.label(), { fontSize: 10, letterSpacing: 1, color: theme.colors.subtext }]}>{children}</Text>
     </Pressable>
   );
 }

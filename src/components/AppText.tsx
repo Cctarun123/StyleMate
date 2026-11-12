@@ -21,7 +21,7 @@ const VARIANT_STYLES: Record<Variant, TextStyle> = {
     fontFamily: theme.fonts.display,
     color: theme.colors.text,
     textTransform: 'uppercase',
-    lineHeight: 1,
+    lineHeight: 1.25,
   },
   label: {
     fontFamily: theme.fonts.mono,

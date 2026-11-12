@@ -33,6 +33,6 @@ const s = StyleSheet.create({
   container: { marginBottom: 28 },
   label: { marginBottom: 8 },
   headingContainer: { flexDirection: 'row' },
-  headingText: { fontSize: 34, marginTop: -4 },
+  headingText: { fontSize: 34 },
   period: { fontSize: 34 },
 });

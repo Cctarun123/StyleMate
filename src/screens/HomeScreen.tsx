@@ -268,25 +268,21 @@ export default function HomeScreen() {
           <AppText
             variant="heading"
             color={theme.colors.text}
-            style={{ fontSize: heroFontSize, lineHeight: heroFontSize }}
+            style={{ fontSize: heroFontSize }}
           >
             {HERO.lines[0]}
           </AppText>
           <AppText
             variant="heading"
             color={theme.colors.accent}
-            style={{ fontSize: heroFontSize, lineHeight: heroFontSize }}
+            style={{ fontSize: heroFontSize }}
           >
             {HERO.lines[1]}
           </AppText>
         </View>
 
         <View style={s.stampRow}>
-          <AppText
-            variant="label"
-            color={theme.colors.accent}
-            style={[s.stampText, { transform: [{ rotate: '-6deg' }] }]}
-          >
+          <AppText variant="label" color={theme.colors.accent} style={s.stampText}>
             {HERO.stamp}
           </AppText>
         </View>
@@ -641,7 +637,7 @@ export default function HomeScreen() {
         )}
         {newsletter.status === 'success' && (
           <AppText variant="label" color={theme.colors.bg} style={[s.newsletterSuccess, { fontWeight: 'bold' }]}>
-            YOU'RE ON THE LIST.
+            YOU&rsquo;RE ON THE LIST.
           </AppText>
         )}
         <AppText variant="label" color={theme.colors.bg} style={s.newsletterFooter}>
@@ -863,8 +859,8 @@ const s = StyleSheet.create({
   footerColumnHeading: { marginBottom: 12 },
   footerLink: { marginBottom: 8 },
   footerLinkText: {},
-  footerWordmarkWrap: { height: 80, overflow: 'hidden', marginBottom: 24 },
-  footerWordmark: { textTransform: 'uppercase', lineHeight: 1 },
+  footerWordmarkWrap: { marginBottom: 24 },
+  footerWordmark: { textTransform: 'uppercase', lineHeight: 1.25 },
   footerStatements: { gap: 6, marginBottom: 24 },
   footerStatement: { fontSize: 10 },
   footerDivider: { height: 1, backgroundColor: theme.colors.border, marginVertical: 16 },

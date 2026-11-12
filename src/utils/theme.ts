@@ -50,7 +50,7 @@ export const text = {
   heading: (): TextStyle => ({
     fontFamily: theme.fonts.display,
     textTransform: 'uppercase',
-    lineHeight: 1,
+    lineHeight: 1.25,
     color: theme.colors.text,
   }),
   label: (): TextStyle => ({

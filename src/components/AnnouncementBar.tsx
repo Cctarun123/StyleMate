@@ -1,11 +1,13 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme } from '../utils/theme';
 import { AppText } from './AppText';
 import { ANNOUNCEMENT, NEXT_DROP_LABEL } from '../constants/brand';
 
 export function AnnouncementBar() {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={s.container}>
+    <View style={[s.container, { paddingTop: insets.top }]}>
       <AppText variant="mono" color={theme.colors.accent} style={s.announcement}>
         {ANNOUNCEMENT}
       </AppText>
