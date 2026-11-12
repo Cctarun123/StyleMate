@@ -10,6 +10,7 @@ const product: Clothing = {
   minTemp: 20,
   maxTemp: 30,
   rainOk: false,
+  query: 'cotton tee',
   image: 'https://images.unsplash.com/photo-1521592712012-82996836a47e',
 };
 

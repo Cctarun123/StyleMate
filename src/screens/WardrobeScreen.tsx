@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useWardrobe } from '../context/WardrobeContext';
 import { Clothing } from '../types';
+import { clothesImages } from '../data/clothesImages';
 import { sheet, useTheme } from '../utils/theme';
 import { formatPrice } from '../utils/outfit';
 import { AppText } from '../components/AppText';
@@ -38,7 +39,7 @@ export default function WardrobeScreen() {
     ({ item }: { item: Clothing }) => (
       <View style={s.row} key={item.id}>
         <View style={s.thumbWrap}>
-          <Image source={{ uri: item.image }} style={s.thumb} resizeMode="cover" />
+          <Image source={clothesImages[item.id]} style={s.thumb} resizeMode="cover" />
         </View>
         <View style={s.info}>
           <AppText variant="body" style={s.title}>

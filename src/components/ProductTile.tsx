@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Clothing } from '../types';
+import { clothesImages } from '../data/clothesImages';
 import { useWardrobe } from '../context/WardrobeContext';
 import { radius, text, useTheme } from '../utils/theme';
 import { formatPrice } from '../utils/outfit';
@@ -74,7 +75,7 @@ function ProductTile({ item, onPress }: Props) {
       <View style={styles.imageWrap}>
         {!imageError ? (
           <Image
-            source={{ uri: item.image }}
+            source={clothesImages[item.id]}
             style={styles.image}
             resizeMode="contain"
             onError={() => setImageError(true)}

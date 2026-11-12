@@ -41,7 +41,8 @@ export type Clothing = {
   minTemp: number;
   maxTemp: number;
   rainOk: boolean;
-  image: string;
+  query: string; // Pixabay search query used to fetch the bundled image
+  image: string; // fallback remote URI (unsplash)
 };
 
 export type Weather = {
