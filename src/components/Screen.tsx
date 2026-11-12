@@ -1,18 +1,13 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../utils/theme';
 
-export function Screen({ children }: { children: React.ReactNode }) {
+export default function Screen({ children }: { children: React.ReactNode }) {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView edges={["top"]} style={[s.container, { backgroundColor: colors.bg }]}>
+    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }}>
       {children}
-    </SafeAreaView>
+    </View>
   );
 }
-
-const s = StyleSheet.create({
-  container: {
-    flex: 1,
-  } as ViewStyle,
-});

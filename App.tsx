@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import {
@@ -77,19 +78,21 @@ export default function App() {
   }
 
   return (
-    <WardrobeProvider>
-      <NavigationContainer theme={DefaultTheme}>
-        <StatusBar style="dark" />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Tabs" component={Tabs} />
-          <Stack.Screen
-            name="ProductDetail"
-            component={ProductDetailScreen}
-            options={{ title: 'Product Details' }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </WardrobeProvider>
+    <SafeAreaProvider>
+      <WardrobeProvider>
+        <NavigationContainer theme={DefaultTheme}>
+          <StatusBar style="dark" />
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Tabs" component={Tabs} />
+            <Stack.Screen
+              name="ProductDetail"
+              component={ProductDetailScreen}
+              options={{ title: 'Product Details' }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </WardrobeProvider>
+    </SafeAreaProvider>
   );
 }
 

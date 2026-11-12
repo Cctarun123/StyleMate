@@ -8,6 +8,7 @@ import { Product } from '../types';
 import { sheet, useTheme } from '../utils/theme';
 import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
+import Screen from "../components/Screen";
 import {
   WARDROBE_TITLE,
   WARDROBE_EMPTY,
@@ -55,7 +56,7 @@ export default function WardrobeScreen() {
   );
 
   return (
-    <View style={sheet.page(colors)}>
+    <Screen>
       <AppText variant="heading" style={s.titleText}>
         {WARDROBE_TITLE}
       </AppText>
@@ -88,7 +89,7 @@ export default function WardrobeScreen() {
           </AppText>
         </View>
       )}
-    </View>
+    </Screen>
   );
 }
 

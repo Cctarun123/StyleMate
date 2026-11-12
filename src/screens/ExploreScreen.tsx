@@ -16,6 +16,7 @@ import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
 import { SearchBar } from '../components/SearchBar';
 import { CategoryTabs } from '../components/CategoryTabs';
+import Screen from "../components/Screen";
 import {
   CATEGORY_ALL,
   CATEGORY_MEN,
@@ -77,22 +78,26 @@ export default function ExploreScreen() {
 
   if (loading)
     return (
-      <View style={sheet.center(colors)}>
-        <ActivityIndicator size="large" color={colors.text} />
-      </View>
+      <Screen>
+        <View style={sheet.center(colors)}>
+          <ActivityIndicator size="large" color={colors.text} />
+        </View>
+      </Screen>
     );
   if (error)
     return (
-      <View style={sheet.center(colors)}>
-        <AppText variant="label" color={colors.text}>
-          {error}
-        </AppText>
-        <Button title="Retry" onPress={refresh} variant="outline" style={styles.retry} />
-      </View>
+      <Screen>
+        <View style={sheet.center(colors)}>
+          <AppText variant="label" color={colors.text}>
+            {error}
+          </AppText>
+          <Button title="Retry" onPress={refresh} variant="outline" style={styles.retry} />
+        </View>
+      </Screen>
     );
 
   return (
-    <View style={sheet.page(colors)}>
+    <Screen>
       <View style={{ marginHorizontal: 16, marginTop: 8, marginBottom: 12 }}>
         <SearchBar value={query} onChangeText={setQuery} placeholder="Search clothes…" />
       </View>
@@ -113,6 +118,6 @@ export default function ExploreScreen() {
         }
         ListEmptyComponent={<AppText variant="label" color={colors.text}>{NOTHING_FOUND}</AppText>}
       />
-    </View>
+    </Screen>
   );
 }
