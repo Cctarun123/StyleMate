@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { WardrobeProvider } from './src/context/WardrobeContext';
 import ExploreScreen from './src/screens/ExploreScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import WardrobeScreen from './src/screens/WardrobeScreen';
 
@@ -13,7 +14,8 @@ export default function App() {
     <WardrobeProvider>
       <NavigationContainer>
         <StatusBar style="auto" />
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
           <Stack.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explore' }} />
           <Stack.Screen
             name="ProductDetail"
