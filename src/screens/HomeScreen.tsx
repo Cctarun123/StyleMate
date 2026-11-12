@@ -8,15 +8,15 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CompositeNavigationProp, useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useProducts } from '../hooks/useProducts';
 import { filterProductsByOutfit } from '../utils/outfit';
-import { sheet, surface, text, useTheme } from '../utils/theme';
+import { sheet, surface, text, useTheme, radius } from '../utils/theme';
 import { AppText } from '../components/AppText';
 import { Button } from '../components/Button';
 import { SearchBar } from '../components/SearchBar';
@@ -92,7 +92,7 @@ function outfitForTemperature(temperature: number): 'jackets' | 'light' | 'casua
 
 export default function HomeScreen() {
   const navigation = useNavigation<HomeNavigationProp>();
-  const { width: screenWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
 
   const {
@@ -164,13 +164,13 @@ export default function HomeScreen() {
   );
 
   const styles = StyleSheet.create({
-    content: { paddingBottom: 110 },
+    content: { paddingBottom: 32 },
     headerRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingHorizontal: 20,
-      paddingTop: 10,
+      paddingHorizontal: 16,
+      paddingTop: insets.top + 8,
       paddingBottom: 16,
     },
     appName: {
@@ -181,42 +181,58 @@ export default function HomeScreen() {
       padding: 6,
     },
     weatherCard: {
-      ...surface(colors),
+      backgroundColor: colors.dark,
+      borderRadius: 24,
       padding: 20,
-      marginHorizontal: 20,
+      marginHorizontal: 16,
       marginBottom: 16,
-      alignItems: 'center',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      width: '100%',
+      alignItems: 'center',
     },
     weatherLabel: {
       ...text.label(colors),
-      color: colors.subtext,
+      color: 'rgba(255, 255, 255, 0.7)',
     },
     weatherTemp: {
       ...text.title(colors),
       fontSize: 40,
       lineHeight: 48,
+      color: colors.onDark,
     },
     weatherWear: {
       ...text.label(colors),
-      color: colors.text,
+      color: colors.onDark,
     },
-    seePicks: {
+    weatherLeft: {
+      flex: 1,
+    },
+    seePicksButton: {
+      borderWidth: 1,
+      borderColor: colors.onDark,
+      borderRadius: radius.pill,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      backgroundColor: 'transparent',
+    },
+    seePicksText: {
       ...text.label(colors),
-      color: colors.price,
-      fontWeight: '600' as const,
+      color: colors.onDark,
     },
     sectionHead: {
-      paddingHorizontal: 20,
+      paddingHorizontal: 16,
       marginBottom: 12,
     },
     grid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      paddingHorizontal: 20,
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
       paddingBottom: 16,
+    },
+    tileWrapper: {
+      width: '48%',
+      marginBottom: 12,
     },
     error: {
       color: colors.text,
@@ -252,11 +268,13 @@ export default function HomeScreen() {
       </View>
 
       {/* Category tabs */}
-      <CategoryTabs selected={tab} onSelect={setTab} />
+      <View style={{ paddingHorizontal: 16 }}>
+        <CategoryTabs selected={tab} onSelect={setTab} />
+      </View>
 
       {/* Weather banner */}
       <View style={styles.weatherCard}>
-        <View style={{ flex: 1 }}>
+        <View style={styles.weatherLeft}>
           <AppText variant="label" style={styles.weatherLabel}>
             {WEATHER_LABEL}
           </AppText>
@@ -277,8 +295,8 @@ export default function HomeScreen() {
             </AppText>
           )}
         </View>
-        <Pressable onPress={() => navigation.navigate(WEATHER_PICKS_SCREEN)}>
-          <AppText variant="label" style={styles.seePicks}>
+        <Pressable style={styles.seePicksButton} onPress={() => navigation.navigate(WEATHER_PICKS_SCREEN)}>
+          <AppText variant="label" style={styles.seePicksText}>
             {WEATHER_SEE_PICKS}
           </AppText>
         </Pressable>
@@ -311,7 +329,9 @@ export default function HomeScreen() {
       ) : (
         <View style={styles.grid}>
           {topPicks.map((item) => (
-            <ProductTile key={item.id} item={item} onPress={onPressItem} />
+            <View key={item.id} style={styles.tileWrapper}>
+              <ProductTile item={item} onPress={onPressItem} />
+            </View>
           ))}
         </View>
       )}

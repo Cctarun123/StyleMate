@@ -21,7 +21,7 @@ function ProductTile({ item, onPress }: Props) {
       backgroundColor: colors.tile,
       borderRadius: radius.md,
       padding: 12,
-      width: '48%',
+      width: '100%',
       alignItems: 'center',
     },
     imageWrap: {
@@ -52,7 +52,7 @@ function ProductTile({ item, onPress }: Props) {
       ...text.body(colors),
       fontSize: 13,
       lineHeight: 18,
-      textAlign: 'center',
+      textAlign: 'left',
       marginBottom: 6,
     },
     price: {
