@@ -1,23 +1,6 @@
 import { cartReducer, CartState } from './CartContext';
 import { Clothing } from '../types';
 
-jest.mock('expo-crypto', () => ({
-  digestStringAsync: jest.fn(async () => 'mocked-hash'),
-  CryptoDigestAlgorithm: { SHA256: 'SHA-256' },
-}));
-jest.mock('expo-secure-store', () => {
-  const store: Record<string, string> = {};
-  return {
-    getItemAsync: jest.fn(async (key: string) => store[key] ?? null),
-    setItemAsync: jest.fn(async (key: string, value: string) => {
-      store[key] = value;
-    }),
-    deleteItemAsync: jest.fn(async (key: string) => {
-      delete store[key];
-    }),
-  };
-});
-
 const product: Clothing = {
   id: 1,
   title: 'Cotton Tee',

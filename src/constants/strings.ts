@@ -58,29 +58,3 @@ export const ORDER_CONTINUE_SHOPPING = 'Continue shopping';
 
 export const ORDERS_TITLE = 'My Orders';
 export const ORDERS_EMPTY = 'No orders yet.';
-
-export const PROFILE_TITLE = 'Profile';
-export const PROFILE_MY_ORDERS = 'My Orders';
-export const PROFILE_NAME = 'Name';
-export const PROFILE_EMAIL = 'Email';
-export const PROFILE_LOGOUT = 'Logout';
-
-export const AUTH_LOGIN = 'Login';
-export const AUTH_REGISTER = 'Create account';
-export const AUTH_WELCOME_BACK = 'Welcome back';
-export const AUTH_CREATE_ACCOUNT = 'Create account';
-export const AUTH_EMAIL = 'Email';
-export const AUTH_PASSWORD = 'Password';
-export const AUTH_CONFIRM_PASSWORD = 'Confirm password';
-export const AUTH_NAME = 'Full name';
-export const AUTH_NO_ACCOUNT = "Don't have an account?";
-export const AUTH_HAS_ACCOUNT = 'Already have an account?';
-export const AUTH_DEMO_NOTE = 'Demo login: data stays on this device. Not real security.';
-
-export const AUTH_ERR_INVALID_EMAIL = 'Enter a valid email address.';
-export const AUTH_ERR_NAME_REQUIRED = 'Name is required.';
-export const AUTH_ERR_PASSWORD_SHORT = 'Password must be at least 6 characters.';
-export const AUTH_ERR_PASSWORD_MISMATCH = 'Passwords do not match.';
-export const AUTH_ERR_EMAIL_EXISTS = 'Email already registered.';
-export const AUTH_ERR_NO_ACCOUNT = 'No account with this email.';
-export const AUTH_ERR_WRONG_PASSWORD = 'Wrong password.';

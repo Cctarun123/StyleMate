@@ -61,28 +61,10 @@ export type Order = {
   method: string;
 };
 
-export type User = {
-  email: string;
-  name: string;
-  passwordHash: string;
-};
-
-export type AuthStatus = 'loading' | 'signedIn' | 'signedOut';
-
-export type AuthContextValue = {
-  status: AuthStatus;
-  email: string | null;
-  name: string | null;
-  register: (email: string, name: string, password: string) => Promise<{ ok: boolean; error?: string }>;
-  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
-  logout: () => void;
-};
-
 export type TabsParamList = {
   Home: undefined;
   Explore: undefined;
   Wardrobe: undefined;
-  Profile: undefined;
 };
 
 export type MainStackParamList = {
@@ -92,11 +74,6 @@ export type MainStackParamList = {
   Checkout: undefined;
   OrderSuccess: { order: Order };
   Orders: undefined;
-};
-
-export type AuthStackParamList = {
-  Login: undefined;
-  Register: undefined;
 };
 
 // Back-compat alias: existing code references RootStackParamList for the main app stack.

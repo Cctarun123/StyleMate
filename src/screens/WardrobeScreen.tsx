@@ -19,6 +19,7 @@ import {
 
 type WardrobeNavigationParamList = {
   ProductDetail: { id: number };
+  Orders: undefined;
 };
 
 export default function WardrobeScreen() {
@@ -30,6 +31,8 @@ export default function WardrobeScreen() {
     (id: number) => navigation.navigate('ProductDetail', { id }),
     [navigation]
   );
+
+  const onViewOrders = useCallback(() => navigation.navigate('Orders'), [navigation]);
 
   const renderItem = useCallback(
     ({ item }: { item: Clothing }) => (
@@ -58,9 +61,14 @@ export default function WardrobeScreen() {
 
   return (
     <Screen>
-      <AppText variant="heading" style={s.titleText}>
-        {WARDROBE_TITLE}
-      </AppText>
+      <View style={s.headerRow}>
+        <AppText variant="heading" style={s.titleText}>
+          {WARDROBE_TITLE}
+        </AppText>
+        <Pressable style={s.iconButton} onPress={onViewOrders}>
+          <Ionicons name="receipt" size={22} color={colors.text} />
+        </Pressable>
+      </View>
 
       {items.length === 0 ? (
         <View style={s.empty}>
@@ -98,6 +106,16 @@ const s = StyleSheet.create({
   titleText: {
     paddingHorizontal: 16,
     paddingBottom: 12,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  iconButton: {
+    padding: 6,
   },
   row: {
     flexDirection: 'row',
