@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import {
   LibreBaskerville_400Regular,
@@ -33,17 +33,15 @@ const TAB_ICONS: Record<string, { outline: string; filled: string }> = {
 function Tabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
-        tabBarButton: ({ route, focused, color, onPress, style }: any) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, size }: any) => {
           const icon = TAB_ICONS[route.name];
           return (
-            <Pressable onPress={onPress} style={[s.tabItem, style]}>
-              <Ionicons
-                name={(focused ? icon.filled : icon.outline) as any}
-                size={24}
-                color={focused ? colors.dark : colors.subtext}
-              />
-            </Pressable>
+            <Ionicons
+              name={(focused ? icon.filled : icon.outline) as any}
+              size={size ?? 24}
+              color={focused ? colors.dark : colors.subtext}
+            />
           );
         },
         tabBarActiveTintColor: colors.dark,
@@ -56,7 +54,7 @@ function Tabs() {
           shadowOpacity: 0,
         },
         headerShown: false,
-      }}
+      })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
       <Tab.Screen name="Explore" component={ExploreScreen} options={{ title: 'Explore' }} />
